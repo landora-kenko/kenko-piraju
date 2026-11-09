@@ -173,4 +173,4 @@ fieldset > legend + * { clear: both; }
 
 /* hero fora da tela: pausa as animações contínuas para poupar a GPU */
 .hero-paused *, .hero-paused *::before, .hero-paused *::after { animation-play-state: paused !important; }
-.halo { will-change: transform; transform: translateZ(0); }
+.halo { will-change: transform; }
