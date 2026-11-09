@@ -45,7 +45,7 @@ function DishCard({ p, onOpen }: { p: P; onOpen: () => void }) {
   const chef = p.tags?.includes('chef')
   return (
     <article
-      className={cn('dish spot group relative mt-12 cursor-pointer border bg-white/[.03] px-3 pb-3 pt-16 transition-colors duration-500 sm:mt-16 sm:px-5 sm:pb-5 sm:pt-28', chef ? 'border-beni/50' : 'border-white/10 hover:border-beni/60', !p.available && 'opacity-60')}
+      className={cn('dish spot group relative mt-12 flex cursor-pointer flex-col border bg-white/[.03] px-3 pb-3 pt-16 transition-colors duration-500 sm:mt-16 sm:px-5 sm:pb-5 sm:pt-28', chef ? 'border-beni/50' : 'border-white/10 hover:border-beni/60', !p.available && 'opacity-60')}
       onClick={onOpen}
       onPointerMove={(e) => {
         const r = e.currentTarget.getBoundingClientRect()
@@ -56,15 +56,17 @@ function DishCard({ p, onOpen }: { p: P; onOpen: () => void }) {
       <div className={cn('absolute -top-10 left-1/2 w-24 -translate-x-1/2 transition-transform duration-[900ms] ease-[var(--ease-out-expo)] group-hover:-translate-y-2 group-hover:rotate-[14deg] group-hover:scale-110 sm:-top-14 sm:w-40', !p.available && 'grayscale')}>
         <Photo crop={cropFor(p.kind, p.id, p.photo)} alt={p.name} className="neon-disc w-full rounded-full" />
       </div>
-      <div className="flex items-baseline justify-between gap-3">
-        <h3 className="font-display text-base font-bold leading-tight sm:text-xl">
-          <button className="text-left after:absolute after:inset-0 focus-visible:outline-offset-8" onClick={(e) => { e.stopPropagation(); onOpen() }}>{p.name}</button>
-        </h3>
-        {p.jp && <span className="hidden shrink-0 font-display text-sm italic text-ash sm:inline">{p.jp}</span>}
+      <div className="flex-1 pb-3 sm:pb-4">
+        <div className="flex items-baseline justify-between gap-3">
+          <h3 className="font-display text-base font-bold leading-tight sm:text-xl">
+            <button className="text-left after:absolute after:inset-0 focus-visible:outline-offset-8" onClick={(e) => { e.stopPropagation(); onOpen() }}>{p.name}</button>
+          </h3>
+          {p.jp && <span className="hidden shrink-0 font-display text-sm italic text-ash sm:inline">{p.jp}</span>}
+        </div>
+        <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-washi/65 sm:mt-2 sm:min-h-[2.9rem] sm:text-sm">{p.desc}</p>
+        <div className="mt-2 hidden min-h-5 flex-wrap gap-x-3 sm:flex">{p.tags?.filter((t) => t !== 'chef').slice(0, 2).map((t) => <TagChip key={t} t={t} />)}</div>
       </div>
-      <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-washi/65 sm:mt-2 sm:min-h-[2.9rem] sm:text-sm">{p.desc}</p>
-      <div className="mt-2 hidden min-h-5 flex-wrap gap-x-3 sm:flex">{p.tags?.filter((t) => t !== 'chef').slice(0, 2).map((t) => <TagChip key={t} t={t} />)}</div>
-      <div className="mt-3 flex items-end justify-between border-t border-white/10 pt-3 sm:mt-4 sm:pt-4">
+      <div className="flex items-end justify-between border-t border-white/10 pt-3 sm:pt-4">
         <div>
           <p className="font-display text-lg font-bold tabular-nums sm:text-2xl">{money(p.price)}</p>
           {p.pieces && <p className="text-[11px] text-ash sm:text-xs">{p.pieces}</p>}
