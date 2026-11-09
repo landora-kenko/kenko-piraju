@@ -18,7 +18,7 @@ export function Logo({ className, tagline, size = 'md' }: { className?: string; 
       <img
         src={size === 'lg' ? '/img/logo-wide.webp' : '/img/logo-wide-sm.webp'} alt=""
         width={size === "lg" ? 300 : 140} height={size === "lg" ? 111 : 52}
-        className={cn('shrink-0 transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:scale-[1.04]', size === 'lg' ? 'h-auto w-[min(78vw,300px)]' : 'h-[52px] w-auto -my-1')}
+        className={cn('shrink-0 transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:scale-[1.04]', size === 'lg' ? 'h-auto w-[min(78vw,300px)]' : 'h-9 w-auto -my-1 md:h-[52px]')}
       />
       {tagline && (
         <>
@@ -73,7 +73,7 @@ export function Nav() {
           stuck ? 'border-white/10 bg-black/90' : 'border-transparent bg-gradient-to-b from-black/70 to-transparent',
         )}
       >
-        <nav aria-label="Principal" className="mx-auto grid h-16 max-w-[1500px] grid-cols-[1fr_auto] items-center gap-4 px-5 md:grid-cols-[1fr_auto_1fr] md:px-10">
+        <nav aria-label="Principal" className="mx-auto grid h-12 max-w-[1500px] md:h-16 grid-cols-[1fr_auto] items-center gap-4 px-5 md:grid-cols-[1fr_auto_1fr] md:px-10">
           <Logo tagline />
           <ul className="hidden items-center gap-9 md:flex">
             {LINKS.map((l) => (
@@ -93,12 +93,12 @@ export function Nav() {
       </header>
 
       {/* dock mobile */}
-      <nav aria-label="Atalhos" className="fixed inset-x-3 bottom-3 z-50 border border-white/10 bg-black/80 md:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <nav aria-label="Atalhos" className="fixed inset-x-3 bottom-2 z-50 border border-white/10 bg-black/80 md:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <ul className="grid grid-cols-5">
           {LINKS.map((l) => (
             <li key={l.id}>
-              <a href={`#${l.id}`} className={cn('flex flex-col items-center gap-0.5 py-2.5 text-[11px] font-medium text-washi/60', active === l.id && 'text-white')}>
-                <l.icon size={19} className={active === l.id ? 'text-shu' : ''} />
+              <a href={`#${l.id}`} className={cn('flex flex-col items-center gap-0.5 py-1.5 text-[10px] font-medium text-washi/60', active === l.id && 'text-white')}>
+                <l.icon size={17} className={active === l.id ? 'text-shu' : ''} />
                 {l.label}
               </a>
             </li>

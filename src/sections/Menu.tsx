@@ -117,7 +117,7 @@ export function Menu() {
   const openProduct = products.find((p) => p.id === open)
 
   return (
-    <section id="cardapio" ref={root} className="relative pt-24 md:pt-32">
+    <section id="cardapio" ref={root} className="relative pt-14 md:pt-32">
       <div className="mx-auto max-w-[1400px] px-5 md:px-10">
         <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
           <div className="flex items-end gap-6">
@@ -127,7 +127,7 @@ export function Menu() {
               <p data-reveal className="mt-3 max-w-md text-lg text-washi/70">Toque em um prato para ver detalhes. Pedidos para entrega, retirada ou para a sua mesa.</p>
             </div>
           </div>
-          <div data-reveal className="w-full md:max-w-sm">
+          <div data-reveal className="hidden w-full md:block md:max-w-sm">
             <label className="relative block">
               <span className="sr-only">Buscar no cardápio</span>
               <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-ash" />
@@ -141,19 +141,32 @@ export function Menu() {
         </div>
       </div>
 
+      <div className="sticky top-12 z-40 border-b border-white/10 bg-[#0b0506] px-5 py-2 md:hidden">
+            <label className="relative block">
+              <span className="sr-only">Buscar no cardápio</span>
+              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-ash" />
+              <input
+                value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar: salmão, hot, gyoza…"
+                className="h-10 w-full border border-white/15 bg-white/[.04] pl-11 pr-10 outline-none transition-colors placeholder:text-ash/70 focus:border-beni"
+              />
+              {q && <button onClick={() => setQ('')} aria-label="Limpar busca" className="absolute right-3 top-1/2 -translate-y-1/2 text-ash hover:text-white"><X size={18} /></button>}
+            </label>
+          </div>
+
+
       {/* categorias */}
-      <div className="sticky top-16 z-40 mt-10 border-y border-white/10 bg-black">
+      <div className="mt-6 border-y border-white/10 bg-black md:sticky md:top-16 md:z-40 md:mt-10">
         <div className="mx-auto max-w-[1400px] px-5 md:px-10">
-          <div ref={bar} className="flex flex-wrap justify-center gap-1 py-2 md:flex-nowrap md:justify-start md:overflow-x-auto md:[scrollbar-width:none]" role="tablist" aria-label="Categorias do cardápio">
+          <div ref={bar} className="flex flex-wrap justify-center gap-x-1 gap-y-0 py-1 md:flex-nowrap md:gap-1 md:py-2 md:justify-start md:overflow-x-auto md:[scrollbar-width:none]" role="tablist" aria-label="Categorias do cardápio">
             {[{ id: 'todos', name: 'Tudo', kanji: '全' }, ...CATEGORIES].map((c) => {
               const on = !filtering && cat === c.id
               return (
                 <button
                   key={c.id} role="tab" aria-selected={on} onClick={() => pick(c.id)}
-                  className={cn('group relative flex w-[calc((100%-1.25rem)/6)] min-w-0 flex-col items-center gap-0.5 px-0.5 py-1.5 transition-colors md:w-auto md:min-w-[5.5rem] md:shrink-0 md:px-4 md:py-2', on ? 'bg-beni text-white' : 'text-washi/70 hover:bg-white/[.06] hover:text-white')}
+                  className={cn('group relative flex w-[calc((100%-1.25rem)/6)] min-w-0 flex-col items-center gap-0 px-0.5 py-1 transition-colors md:w-auto md:min-w-[5.5rem] md:shrink-0 md:px-4 md:py-2', on ? 'bg-beni text-white' : 'text-washi/70 hover:bg-white/[.06] hover:text-white')}
                 >
-                  <span className={cn('font-display text-base font-extrabold leading-none md:text-xl', on ? 'text-white' : 'text-beni')}>{c.kanji}</span>
-                  <span className="whitespace-nowrap text-[10.5px] font-medium md:hidden">{SHORT[c.id] ?? c.name}</span>
+                  <span className={cn('font-display text-sm font-extrabold leading-none md:text-xl', on ? 'text-white' : 'text-beni')}>{c.kanji}</span>
+                  <span className="whitespace-nowrap text-[10px] font-medium md:hidden">{SHORT[c.id] ?? c.name}</span>
                   <span className="hidden whitespace-nowrap text-[13px] font-medium md:inline">{c.name}</span>
                 </button>
               )
@@ -162,7 +175,7 @@ export function Menu() {
         </div>
       </div>
 
-      <div id="cardapio-grid" className="mx-auto max-w-[1400px] scroll-mt-44 px-5 md:scroll-mt-36 pb-8 md:px-10">
+      <div id="cardapio-grid" className="mx-auto max-w-[1400px] scroll-mt-28 px-5 md:scroll-mt-36 pb-8 md:px-10">
         <div className="mt-6 grid grid-cols-4 items-center gap-1.5 md:flex md:flex-wrap md:gap-2" aria-label="Filtros">
           <span className="mr-1 hidden text-sm text-ash md:inline">Filtrar:</span>
           {FILTERS.map((t) => {
