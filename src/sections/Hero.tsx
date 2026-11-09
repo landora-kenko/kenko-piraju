@@ -107,7 +107,7 @@ export function Hero({ revealed }: { revealed: boolean }) {
                   <div className="plate-intro h-full w-full">
                     <div className="plate-spin h-full w-full">
                       <img
-                        src="/img/plate.webp" width={1000} height={1000} fetchPriority="high" draggable={false}
+                        src="/img/plate.webp" width={1600} height={1600} fetchPriority="high" draggable={false}
                         alt="Prato redondo com niguiris, sashimis e rolinhos variados do Kenko"
                         className="h-full w-full select-none drop-shadow-[0_30px_40px_rgba(0,0,0,.6)]"
                       />
