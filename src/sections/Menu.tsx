@@ -196,14 +196,14 @@ export function Menu() {
               <>
                 {(() => {
                   const shown = showAll(g.id) ? g.items : g.items.slice(0, LIMIT)
+                  const titled = showAll(g.id) && g.id !== 'busca' && new Set(g.items.map((p) => p.group)).size > 1
                   const subs: { name: string; items: P[] }[] = []
                   for (const p of shown) {
-                    const n = p.group ?? ''
+                    const n = titled ? (p.group ?? '') : ''
                     const last = subs[subs.length - 1]
                     if (last && last.name === n) last.items.push(p)
                     else subs.push({ name: n, items: [p] })
                   }
-                  const titled = showAll(g.id) && g.id !== 'busca' && new Set(g.items.map((p) => p.group)).size > 1
                   return subs.map((s) => (
                     <div key={s.name} className={titled ? 'mt-8 first:mt-6' : ''}>
                       {titled && s.name && <h4 className="mb-1 font-display text-lg font-bold text-beni md:text-xl">{s.name}</h4>}
