@@ -15,6 +15,7 @@ const Admin = lazy(() => import('./pages/Admin'))
 
 export default function App() {
   const [revealed, setRevealed] = useState(false)
+  const [doorsOpen, setDoorsOpen] = useState(false)
 
   if (location.pathname.startsWith('/admin')) {
     return <Suspense fallback={<div className="grid min-h-screen place-items-center bg-black text-ash">Carregando…</div>}><Admin /></Suspense>
@@ -22,7 +23,7 @@ export default function App() {
 
   return (
     <CartProvider>
-      <Preloader onReveal={() => setRevealed(true)} onDone={() => {}} />
+      <Preloader onReveal={() => setRevealed(true)} onDone={() => setDoorsOpen(true)} />
       <Nav />
       <main>
         <Hero revealed={revealed} />
@@ -34,8 +35,8 @@ export default function App() {
       </main>
       <Footer />
       <CartSheet />
-      <div className="tex tex-wash" aria-hidden />
-      <div className="tex tex-grain" aria-hidden />
+      <div className="tex tex-wash" aria-hidden style={{ visibility: doorsOpen ? 'visible' : 'hidden' }} />
+      <div className="tex tex-grain" aria-hidden style={{ visibility: doorsOpen ? 'visible' : 'hidden' }} />
     </CartProvider>
   )
 }
