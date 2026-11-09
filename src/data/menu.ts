@@ -33,6 +33,8 @@ export interface Product {
   pieces?: string
   kind: Kind
   tint: string
+  /** Recorte de foto (ver src/data/photos.json). Se vazio, escolhe pelo tipo. */
+  photo?: string
   tags?: Tag[]
   featured?: boolean
 }

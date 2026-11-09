@@ -4,7 +4,6 @@ import { CATEGORIES, PRODUCTS } from '../data/menu'
 import { TABLES, ZONES, type TableStatus } from '../data/tables'
 import { store, type Order, type OrderStatus, type Overrides, type Reservation, type TableMap } from '../lib/store'
 import { cn, money } from '../lib/utils'
-import { SvgDefs } from '../components/art/SvgDefs'
 
 type Tab = 'pedidos' | 'reservas' | 'mesas' | 'cardapio' | 'comandas'
 const TABS: { id: Tab; label: string; icon: typeof Bell }[] = [
@@ -110,7 +109,6 @@ function Panel({ email }: { email: string }) {
 
   return (
     <div className="min-h-screen bg-black">
-      <SvgDefs />
       <header className="sticky top-0 z-20 border-b border-white/10 bg-black/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-[1500px] flex-wrap items-center gap-x-8 gap-y-2 px-5 py-3">
           <a href="/" className="flex items-center gap-2.5"><span className="hanko h-8 w-8 text-lg">健</span><span className="font-display text-xl font-extrabold">Painel</span></a>

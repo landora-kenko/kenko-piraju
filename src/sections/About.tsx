@@ -3,6 +3,7 @@ import { animate, onScroll } from 'animejs'
 import { useReveal } from '../hooks/useReveal'
 import { useSplit } from '../hooks/useSplit'
 import { reducedMotion } from '../lib/utils'
+import { Photo } from '../components/Photo'
 
 const PRINCIPLES = [
   { k: '旬', n: 'Shun', t: 'Ingrediente na estação', d: 'Peixes e legumes escolhidos pelo frescor do dia, não pelo costume.' },
@@ -15,8 +16,27 @@ export function About() {
   const title = useSplit<HTMLHeadingElement>()
   const fill = useRef<HTMLDivElement>(null)
   const box = useRef<HTMLDivElement>(null)
+  const frame = useRef<HTMLDivElement>(null)
+  const img = useRef<HTMLImageElement>(null)
+  const disc = useRef<HTMLDivElement>(null)
 
   /* o kanji se enche de tinta conforme a rolagem */
+  useEffect(() => {
+    const f = frame.current!, d = disc.current!
+    if (reducedMotion()) { f.style.clipPath = 'inset(0)'; d.style.opacity = '1' }
+    else {
+      const io = new IntersectionObserver(([e]) => {
+        if (!e.isIntersecting) return
+        io.disconnect()
+        animate(f, { clipPath: ['inset(0 0 100% 0)', 'inset(0 0 0% 0)'], duration: 1500, ease: 'outExpo' })
+        animate(d, { opacity: [0, 1], scale: [0.5, 1], rotate: [-120, 0], duration: 1600, delay: 500, ease: 'outExpo' })
+      }, { threshold: 0.2 })
+      io.observe(box.current!)
+      const par = animate(img.current!, { y: ['-7%', '7%'], ease: 'linear', autoplay: onScroll({ target: f, enter: 'top bottom', leave: 'bottom top', sync: true }) })
+      return () => { io.disconnect(); par.revert() }
+    }
+  }, [])
+
   useEffect(() => {
     if (reducedMotion()) { if (fill.current) fill.current.style.clipPath = 'inset(0)'; return }
     const a = animate(fill.current!, {
@@ -30,16 +50,25 @@ export function About() {
   return (
     <section id="sobre" ref={root} className="relative px-5 py-24 md:px-10 md:py-36">
       <div className="mx-auto grid max-w-[1400px] gap-16 lg:grid-cols-12 lg:gap-8">
-        {/* kanji */}
+        {/* fotos + kanji */}
         <div className="lg:col-span-5">
-          <div ref={box} className="relative mx-auto flex w-fit items-stretch gap-6 lg:sticky lg:top-28">
-            <div className="relative font-display text-[clamp(9rem,26vw,21rem)] font-extrabold leading-[.9] vertical" aria-hidden>
-              <span className="block text-transparent" style={{ WebkitTextStroke: '1.5px rgba(241,235,227,.35)' }}>健康</span>
-              <div ref={fill} className="absolute inset-0 text-beni" style={{ clipPath: 'inset(100% 0 0 0)' }}>健康</div>
+          <div ref={box} className="relative mx-auto w-full max-w-[470px] pb-14 lg:sticky lg:top-28">
+            <div ref={frame} className="relative aspect-[4/5] w-[80%] overflow-hidden bg-[#120506]" style={{ clipPath: 'inset(0 0 100% 0)' }}>
+              <img ref={img} src="/img/tobiko.webp" alt="Uramaki coberto de ovas laranja, segurado por hashi sobre o molho shoyu" loading="lazy" decoding="async" className="absolute -top-[8%] left-0 h-[116%] w-full object-cover object-[50%_28%]" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-wine/30" />
             </div>
-            <div className="flex flex-col justify-between py-4">
-              <p className="vertical-latin text-sm tracking-[.4em] text-ash">kenko, saúde</p>
-              <span className="hanko h-12 w-12 text-2xl" aria-hidden>食</span>
+            <div ref={disc} className="neon-disc absolute -bottom-0 -left-4 w-[46%] rounded-full opacity-0 md:-left-8">
+              <Photo crop="splash-roll" alt="Uramaki com broto, mergulhando no shoyu" className="w-full rounded-full" />
+            </div>
+            <div className="absolute right-0 top-0 flex items-stretch gap-3">
+              <div className="relative font-display text-[clamp(5.2rem,13vw,9.5rem)] font-extrabold leading-[.9] vertical" aria-hidden>
+                <span className="block text-transparent" style={{ WebkitTextStroke: '1.5px rgba(241,235,227,.45)' }}>健康</span>
+                <div ref={fill} className="absolute inset-0 text-beni [text-shadow:0_0_26px_rgba(255,45,31,.6)]" style={{ clipPath: 'inset(100% 0 0 0)' }}>健康</div>
+              </div>
+              <div className="flex flex-col justify-between py-3">
+                <p className="vertical-latin text-xs tracking-[.4em] text-ash">kenko, saúde</p>
+                <span className="hanko h-11 w-11 text-xl" aria-hidden>食</span>
+              </div>
             </div>
           </div>
         </div>

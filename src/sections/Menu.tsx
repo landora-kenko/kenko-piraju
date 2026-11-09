@@ -2,7 +2,7 @@ import { useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'reac
 import { animate, stagger } from 'animejs'
 import { Plus, Search, X } from 'lucide-react'
 import { CATEGORIES, categoryById, type Product, type Tag } from '../data/menu'
-import { DishArt } from '../components/art/DishArt'
+import { Photo, cropFor } from '../components/Photo'
 import { DishModal, TAG_META, TagChip } from '../components/DishModal'
 import { useCart } from '../lib/cart'
 import { flyToCart } from '../lib/fly'
@@ -48,7 +48,7 @@ function DishCard({ p, onOpen }: { p: P; onOpen: () => void }) {
       }}
     >
       <div className={cn('relative w-28 shrink-0 self-start transition-transform sm:absolute sm:-top-14 sm:left-1/2 sm:w-40 sm:-translate-x-1/2 duration-[900ms] ease-[var(--ease-out-expo)] group-hover:-translate-y-2 group-hover:rotate-[14deg] group-hover:scale-110', !p.available && 'grayscale')}>
-        <DishArt kind={p.kind} tint={p.tint} id={p.id} className="w-full drop-shadow-[0_16px_18px_rgba(0,0,0,.65)]" />
+        <Photo crop={cropFor(p.kind, p.id, p.photo)} alt={p.name} className="neon-disc w-full rounded-full" />
       </div>
       <div className="min-w-0 flex-1">
       {chef && <span className="absolute left-0 top-0 bg-beni px-2.5 py-1 text-xs font-bold">Escolha do sushiman</span>}
@@ -195,7 +195,7 @@ export function Menu() {
             )}
           </div>
         ))}
-        <p className="mt-16 text-center text-sm text-ash">Imagens ilustrativas. Pratos podem variar conforme a disponibilidade do dia.</p>
+        <p className="mt-16 text-center text-sm text-ash">Fotos ilustrativas. Pratos podem variar conforme a disponibilidade do dia.</p>
       </div>
 
       {openProduct && <DishModal product={openProduct} onClose={() => setOpen(null)} />}

@@ -1,5 +1,4 @@
 import { lazy, Suspense, useState } from 'react'
-import { SvgDefs } from './components/art/SvgDefs'
 import { CartSheet } from './components/CartSheet'
 import { CartProvider } from './lib/cart'
 import { About } from './sections/About'
@@ -23,7 +22,6 @@ export default function App() {
 
   return (
     <CartProvider>
-      <SvgDefs />
       <Preloader onReveal={() => setRevealed(true)} onDone={() => {}} />
       <Nav />
       <main>

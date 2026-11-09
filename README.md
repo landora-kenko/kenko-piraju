@@ -5,6 +5,8 @@ Site de apresentação da marca + cardápio digital com delivery, retirada, pedi
 **Stack:** Vite, React 19, TypeScript, Tailwind CSS v4, [anime.js v4](https://animejs.com) (animações e scroll), Firebase (Hosting, Firestore, Auth).
 Componentes ao estilo shadcn/ui (`cn`, variantes, lucide-react) e efeitos inspirados em Aceternity UI / 21st.dev / Uiverse (spotlight que segue o cursor, marquee, cards com tilt, dock de navegação, botões animados), escritos à mão para ficar leves.
 
+> Passo a passo completo de configuração (GitHub, Firebase, deploy, domínio): veja **[SETUP.md](SETUP.md)**.
+
 ## Rodar
 
 ```bash

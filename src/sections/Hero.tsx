@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { animate, createTimeline, onScroll, stagger } from 'animejs'
 import { ArrowRight, ShoppingBag } from 'lucide-react'
-import { ExplodedNigiri } from '../components/art/ExplodedNigiri'
 import { Embers } from '../components/art/Embers'
 import { openStatus } from '../lib/config'
 import { reducedMotion } from '../lib/utils'
@@ -24,11 +23,13 @@ export function Hero({ revealed }: { revealed: boolean }) {
     const tl = createTimeline({ defaults: { ease: 'outExpo' } })
     tl.add('.sun-wrap', { opacity: [0, 1], scale: [0.55, 1], duration: 1800 }, 0)
       .add('.hk', { y: ['115%', '0%'], rotate: { from: fn((i) => (i % 2 ? 6 : -6)), to: 0 }, opacity: [0, 1], duration: 1400, delay: stagger(90) }, 150)
-      .add('.ex-intro', { y: [-160, 0], rotate: [-8, 0], opacity: [0, 1], duration: 1700, ease: 'outBack' }, 500)
+      .add('.ex-intro', { y: [-180, 0], scale: [0.78, 1], opacity: [0, 1], duration: 1500, ease: 'outBack' }, 450)
+      .add('.plate-intro', { rotate: [-260, 0], duration: 2600, ease: 'outExpo' }, 450)
+      .add('.plate-ring', { opacity: [0, 1], duration: 1400 }, 1300)
       .add('[data-in="up"]', { y: [28, 0], opacity: [0, 1], duration: 1100, delay: stagger(120) }, 900)
       .add('.rail', { opacity: [0, 1], duration: 1200 }, 1200)
       .add('.halo', { opacity: [0, 0.55], duration: 1600 }, 900)
-    const float = animate('.ex-float', { y: [-7, 7], rotate: [-1, 1], duration: 3800, alternate: true, loop: true, ease: 'inOutSine' })
+    const float = animate('.ex-float', { y: [-6, 6], duration: 3800, alternate: true, loop: true, ease: 'inOutSine' })
     return () => { tl.revert(); float.revert() }
   }, [revealed])
 
@@ -40,17 +41,16 @@ export function Hero({ revealed }: { revealed: boolean }) {
       defaults: { ease: 'inOutSine', duration: 1000 },
       autoplay: onScroll({ target: el, enter: 'top top', leave: 'bottom bottom', sync: true }),
     })
-    tl.add('.ex-garnish', { y: [0, -160], rotate: [0, -3] }, 0)
-      .add('.ex-neta', { y: [0, -96], rotate: [0, 1.5] }, 0)
-      .add('.ex-nori', { y: [0, -6] }, 0)
-      .add('.ex-rice', { y: [0, 84] }, 0)
-      .add('.ex-shadow', { scaleX: [1, 1.12], opacity: [0.7, 0.35] }, 0)
+    tl.add('.plate-spin', { rotate: [0, -360], duration: 720, ease: 'inOutCubic' }, 0)
+      .add('.plate-zoom', { scale: [1, 1.06], duration: 1000, ease: 'linear' }, 0)
+      .add('.plate-glow', { opacity: [0.55, 0.85], duration: 1000 }, 0)
       .add('.hk-i', { x: { to: fn((i) => (i - 2) * 12) }, y: { to: fn((i) => (i % 2 ? 16 : -16)) } }, 0)
       .add('.sun', { scale: [1, 1.18] }, 0)
-      .add('.wordmark', { opacity: [1, 0.4] }, 0)
+      .add('.wordmark', { opacity: [1, 0.16] }, 0)
       .add('.hero-copy', { opacity: [1, 0], y: [0, -40], duration: 260 }, 40)
-      .add('.ex-label', { opacity: [0, 1], y: [16, 0], duration: 220, delay: stagger(130) }, 480)
-      .add('.ex-label-line', { scaleX: [0, 1], duration: 260, delay: stagger(130) }, 480)
+      .add('.ex-label', { opacity: [0, 1], duration: 160, delay: stagger(90) }, 760)
+      .add('.ex-label-line', { scaleX: [0, 1], duration: 200, delay: stagger(90) }, 760)
+      .add('.ex-label-dot', { scale: [0, 1], duration: 160, delay: stagger(90) }, 760)
     return () => { tl.revert() }
   }, [])
 
@@ -95,16 +95,28 @@ export function Hero({ revealed }: { revealed: boolean }) {
           </span>
         </h1>
 
-        {/* sushi */}
-        <div className="absolute left-1/2 top-[47%] w-[min(104vw,56svh,780px)] -translate-x-1/2 -translate-y-1/2 md:w-[min(100vw,80svh,780px)] md:top-[55%]">
+        {/* prato */}
+        <div className="absolute left-1/2 top-[47%] w-[min(92vw,50svh,760px)] -translate-x-1/2 -translate-y-1/2 md:top-[55%] md:w-[min(90vw,76svh,760px)]">
           <div className="transition-transform duration-700 ease-out" style={{ transform: 'translate3d(calc(var(--mx) * -16px), calc(var(--my) * -10px), 0)' }}>
             <div className="ex-intro" style={hidden} data-in>
-              <div className="ex-float relative">
-                <ExplodedNigiri className="w-full drop-shadow-[0_30px_40px_rgba(0,0,0,.55)]" />
-                {/* legendas */}
-                <Label cls="right-full top-[41%] mr-2" side="left" title="Salmão maçaricado" text="Selado na hora, com tarê e cebolinha." />
-                <Label cls="left-full top-[53%] ml-2" side="right" title="Alga nori tostada" text="Uma faixa fina que segura o corte." />
-                <Label cls="right-full top-[75%] mr-2" side="left" title="Arroz shari" text="Temperado com vinagre, moldado à mão." />
+              <div className="ex-float relative [container-type:inline-size]">
+                <div className="plate-zoom relative aspect-square">
+                  <img src="/img/plate.webp" alt="" aria-hidden className="plate-glow absolute inset-0 h-full w-full scale-[1.1] opacity-55 blur-[36px] saturate-[1.9]" />
+                  <div className="plate-ring absolute -inset-[1.6%] rounded-full" style={hidden} />
+                  <div className="plate-intro h-full w-full">
+                    <div className="plate-spin h-full w-full">
+                      <img
+                        src="/img/plate.webp" width={1000} height={1000} fetchPriority="high" draggable={false}
+                        alt="Prato redondo com niguiris, sashimis e rolinhos variados do Kenko"
+                        className="h-full w-full select-none drop-shadow-[0_30px_40px_rgba(0,0,0,.6)]"
+                      />
+                    </div>
+                  </div>
+                  <div className="plate-gloss pointer-events-none absolute inset-0 rounded-full" />
+                </div>
+                <Callout x={22} y={41} side="left" title="Salmão fresco" text="Fatia grossa, cortada na hora." />
+                <Callout x={77} y={70} side="right" title="Atum" text="Corte limpo, servido gelado." />
+                <Callout x={74} y={28} side="right" title="Rolinhos de alga" text="Arroz temperado e recheio do dia." />
               </div>
             </div>
           </div>
@@ -141,12 +153,21 @@ export function Hero({ revealed }: { revealed: boolean }) {
   )
 }
 
-function Label({ cls, side, title, text }: { cls: string; side: 'left' | 'right'; title: string; text: string }) {
+/** Legenda ligada a um ponto do prato (x, y em % do prato). O prato termina o giro parado, então o ponto fica no lugar. */
+function Callout({ x, y, side, title, text }: { x: number; y: number; side: 'left' | 'right'; title: string; text: string }) {
+  const left = side === 'left'
+  const reach = left ? x : 100 - x
   return (
-    <div className={`ex-label absolute ${cls} hidden w-56 opacity-0 lg:block`} style={{ textAlign: side === 'right' ? 'left' : 'right' }}>
-      <div className={`ex-label-line mb-2 h-px w-20 bg-beni ${side === 'left' ? 'ml-auto origin-right' : 'origin-left'}`} />
-      <p className="font-display text-xl font-bold leading-tight">{title}</p>
-      <p className="mt-1 text-sm leading-snug text-washi/70">{text}</p>
+    <div className="ex-label absolute hidden opacity-0 lg:block" style={{ left: `${x}%`, top: `${y}%` }}>
+      <span className="ex-label-dot callout-dot" />
+      <span
+        className="ex-label-line absolute top-0 h-px bg-shu shadow-[0_0_8px_#ff2d1f]"
+        style={left ? { right: 0, width: `calc(${reach}cqw + 2.5rem)`, transformOrigin: 'right' } : { left: 0, width: `calc(${reach}cqw + 2.5rem)`, transformOrigin: 'left' }}
+      />
+      <div className="absolute top-0 w-56 -translate-y-1/2 [text-shadow:0_2px_14px_#000,0_0_4px_#000]" style={left ? { right: `calc(${reach}cqw + 3rem)`, textAlign: 'right' } : { left: `calc(${reach}cqw + 3rem)` }}>
+        <p className="font-display text-xl font-bold leading-tight">{title}</p>
+        <p className="mt-1 text-sm leading-snug text-washi/70">{text}</p>
+      </div>
     </div>
   )
 }

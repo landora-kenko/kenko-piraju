@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
 import { Flame, Leaf, Minus, Plus, Sparkles, ChefHat, X } from 'lucide-react'
-import { DishArt } from './art/DishArt'
+import { Photo, cropFor } from './Photo'
 import { categoryById, type Product, type Tag } from '../data/menu'
 import { useCart } from '../lib/cart'
 import { flyToCart } from '../lib/fly'
@@ -64,8 +64,8 @@ export function DishModal({ product, onClose }: { product: Product & { available
         <button data-close onClick={onClose} aria-label="Fechar" className="absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center bg-black/60 hover:bg-beni"><X size={20} /></button>
 
         <div className="relative grid place-items-center overflow-hidden bg-gradient-to-b from-wine/70 to-black p-8 md:p-10">
-          <div className="sun absolute left-1/2 top-1/2 h-[75%] w-[75%] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-70" />
-          <DishArt kind={product.kind} tint={product.tint} id={product.id} className="m-plate relative w-[min(70vw,340px)] drop-shadow-[0_24px_30px_rgba(0,0,0,.6)]" />
+          <div className="absolute left-1/2 top-1/2 h-[78%] w-[78%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-shu/40 blur-[70px]" />
+          <Photo crop={cropFor(product.kind, product.id, product.photo)} alt={product.name} eager className="m-plate neon-disc relative w-[min(70vw,360px)] rounded-full" />
         </div>
 
         <div className="flex flex-col p-6 md:p-9">

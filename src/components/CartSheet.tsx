@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { animate, svg } from 'animejs'
 import { ArrowLeft, Bike, Check, Copy, Minus, Plus, Store, Trash2, UtensilsCrossed, X } from 'lucide-react'
-import { DishArt } from './art/DishArt'
+import { Photo, cropFor } from './Photo'
 import { useCart } from '../lib/cart'
 import { DELIVERY_ZONES, MIN_DELIVERY_ORDER, RESTAURANT, waLink } from '../lib/config'
 import { store, type Order, type OrderMode } from '../lib/store'
@@ -195,7 +195,7 @@ export function CartSheet() {
                 const p = find(l.id)!
                 return (
                   <li key={l.key} className="flex gap-4 py-4">
-                    <DishArt kind={p.kind} tint={p.tint} id={p.id} className="h-16 w-16 shrink-0" />
+                    <Photo crop={cropFor(p.kind, p.id, p.photo)} alt="" className="h-16 w-16 shrink-0 rounded-full ring-1 ring-shu/50" />
                     <div className="min-w-0 flex-1">
                       <div className="flex justify-between gap-3">
                         <p className="font-display text-lg font-bold leading-tight">{p.name}</p>
