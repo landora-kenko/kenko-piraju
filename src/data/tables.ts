@@ -34,8 +34,8 @@ export const TABLES: TableDef[] = [
   { id: 'S6', label: 'Mesa 6', zone: 'salao', seats: 4, x: 380, y: 410, shape: 'round' },
   { id: 'T1', label: 'Tatame 1', zone: 'tatame', seats: 6, x: 640, y: 180, shape: 'low' },
   { id: 'T2', label: 'Tatame 2', zone: 'tatame', seats: 6, x: 640, y: 320, shape: 'low' },
-  { id: 'V1', label: 'Varanda 1', zone: 'varanda', seats: 4, x: 760, y: 470, shape: 'round' },
-  { id: 'V2', label: 'Varanda 2', zone: 'varanda', seats: 4, x: 630, y: 470, shape: 'round' },
+  { id: 'V1', label: 'Varanda 1', zone: 'varanda', seats: 4, x: 760, y: 478, shape: 'round' },
+  { id: 'V2', label: 'Varanda 2', zone: 'varanda', seats: 4, x: 630, y: 478, shape: 'round' },
 ]
 
 export const DEMO_STATUS: Record<string, TableStatus> = {

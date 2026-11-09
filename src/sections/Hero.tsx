@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { animate, createTimeline, onScroll, stagger } from 'animejs'
+import { animate, createTimeline, stagger } from 'animejs'
 import { ArrowRight, ShoppingBag } from 'lucide-react'
 import { Embers } from '../components/art/Embers'
 import { openStatus } from '../lib/config'
@@ -33,25 +33,26 @@ export function Hero({ revealed }: { revealed: boolean }) {
     return () => { tl.revert(); float.revert() }
   }, [revealed])
 
-  /* vista explodida controlada pelo scroll */
+  /* rolagem: um único progresso (--p, 0 a 1) suavizado em rAF; o resto é CSS */
   useEffect(() => {
     if (reducedMotion()) return
     const el = sec.current!
-    const tl = createTimeline({
-      defaults: { ease: 'inOutSine', duration: 1000 },
-      autoplay: onScroll({ target: el, enter: 'top top', leave: 'bottom bottom', sync: true }),
-    })
-    tl.add('.plate-spin', { rotate: [0, -360], duration: 720, ease: 'inOutCubic' }, 0)
-      .add('.plate-zoom', { scale: [1, 1.06], duration: 1000, ease: 'linear' }, 0)
-      .add('.plate-glow', { opacity: [0.55, 0.85], duration: 1000 }, 0)
-      .add('.hk-i', { x: { to: fn((i) => (i - 2) * 12) }, y: { to: fn((i) => (i % 2 ? 16 : -16)) } }, 0)
-      .add('.sun', { scale: [1, 1.18] }, 0)
-      .add('.wordmark', { opacity: [1, 0.16] }, 0)
-      .add('.hero-copy', { opacity: [1, 0], y: [0, -40], duration: 260 }, 40)
-      .add('.ex-label', { opacity: [0, 1], duration: 160, delay: stagger(90) }, 760)
-      .add('.ex-label-line', { scaleX: [0, 1], duration: 200, delay: stagger(90) }, 760)
-      .add('.ex-label-dot', { scale: [0, 1], duration: 160, delay: stagger(90) }, 760)
-    return () => { tl.revert() }
+    let target = 0, cur = 0, raf = 0
+    const read = () => {
+      const max = el.offsetHeight - innerHeight
+      target = max > 0 ? Math.min(1, Math.max(0, -el.getBoundingClientRect().top / max)) : 0
+    }
+    const tick = () => {
+      cur += (target - cur) * 0.14
+      if (Math.abs(target - cur) < 0.0008) cur = target
+      el.style.setProperty('--p', cur.toFixed(4))
+      raf = cur === target ? 0 : requestAnimationFrame(tick)
+    }
+    const onScroll = () => { read(); if (!raf) raf = requestAnimationFrame(tick) }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); cancelAnimationFrame(raf) }
   }, [])
 
   /* paralaxe leve com o ponteiro */
@@ -69,7 +70,7 @@ export function Hero({ revealed }: { revealed: boolean }) {
   const hidden = { opacity: 0 }
 
   return (
-    <section id="inicio" ref={sec} className="relative h-[330vh]" style={{ ['--mx' as string]: 0, ['--my' as string]: 0 }}>
+    <section id="inicio" ref={sec} className="hero-scroll relative h-[170vh]" style={{ ['--mx' as string]: 0, ['--my' as string]: 0, ['--p' as string]: 0 }}>
       <div className="sticky top-0 h-[100svh] overflow-hidden bg-black">
         <Embers className="absolute inset-0 h-full w-full" />
 
@@ -158,7 +159,7 @@ function Callout({ x, y, side, title, text }: { x: number; y: number; side: 'lef
   const left = side === 'left'
   const reach = left ? x : 100 - x
   return (
-    <div className="ex-label absolute hidden opacity-0 lg:block" style={{ left: `${x}%`, top: `${y}%` }}>
+    <div className="ex-label absolute hidden lg:block" style={{ left: `${x}%`, top: `${y}%` }}>
       <span className="ex-label-dot callout-dot" />
       <span
         className="ex-label-line absolute top-0 h-px bg-shu shadow-[0_0_8px_#ff2d1f]"

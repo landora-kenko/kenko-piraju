@@ -46,17 +46,50 @@ const rollAddons: Addon[] = [
   { id: 'crocante', name: 'Cebola crocante', price: 3 },
 ]
 
+const sauceAddons: Addon[] = [
+  { id: 'shoyu', name: 'Shoyu extra', price: 2 },
+  { id: 'wasabi', name: 'Wasabi extra', price: 2 },
+  { id: 'gengibre', name: 'Gengibre extra', price: 2 },
+  { id: 'tare', name: 'Molho tarê extra', price: 2 },
+]
+const rawAddons: Addon[] = [
+  { id: 'shoyu', name: 'Shoyu extra', price: 2 },
+  { id: 'wasabi', name: 'Wasabi extra', price: 2 },
+  { id: 'gengibre', name: 'Gengibre extra', price: 2 },
+  { id: 'ponzu', name: 'Molho ponzu', price: 3 },
+]
+const hotAddons: Addon[] = [
+  { id: 'arroz', name: 'Arroz branco', price: 6 },
+  { id: 'picante', name: 'Molho picante', price: 3 },
+  { id: 'legumes', name: 'Legumes extras', price: 5 },
+  { id: 'ovo', name: 'Ovo frito por cima', price: 4 },
+]
+const starterAddons: Addon[] = [
+  { id: 'agridoce', name: 'Molho agridoce', price: 3 },
+  { id: 'spicy', name: 'Maionese spicy', price: 3 },
+  { id: 'shoyu', name: 'Shoyu extra', price: 2 },
+]
+const dessertAddons: Addon[] = [
+  { id: 'sorvete', name: 'Bola de sorvete', price: 6 },
+  { id: 'calda', name: 'Calda de frutas vermelhas', price: 3 },
+  { id: 'chantilly', name: 'Chantilly', price: 2 },
+]
+const drinkAddons: Addon[] = [
+  { id: 'gelo', name: 'Copo com gelo e limão', price: 0 },
+  { id: 'dose', name: 'Dose extra de sake', price: 12 },
+]
+
 export const CATEGORIES: Category[] = [
-  { id: 'combinados', name: 'Combinados', jp: 'Kumiawase', kanji: '組合', blurb: 'Barcas montadas pelo sushiman para dividir.' },
-  { id: 'niguiris', name: 'Niguiris', jp: 'Nigiri', kanji: '握り', blurb: 'Arroz moldado à mão, peixe cortado na hora.' },
-  { id: 'sashimis', name: 'Sashimis', jp: 'Sashimi', kanji: '刺身', blurb: 'Só o peixe. Corte limpo, sem arroz.' },
+  { id: 'combinados', name: 'Combinados', jp: 'Kumiawase', kanji: '組合', blurb: 'Barcas montadas pelo sushiman para dividir.', addons: sauceAddons },
+  { id: 'niguiris', name: 'Niguiris', jp: 'Nigiri', kanji: '握り', blurb: 'Arroz moldado à mão, peixe cortado na hora.', addons: rawAddons },
+  { id: 'sashimis', name: 'Sashimis', jp: 'Sashimi', kanji: '刺身', blurb: 'Só o peixe. Corte limpo, sem arroz.', addons: rawAddons },
   { id: 'uramakis', name: 'Uramakis e makis', jp: 'Maki', kanji: '巻', blurb: 'Oito peças por porção, arroz por fora.', addons: rollAddons },
   { id: 'hots', name: 'Hot rolls', jp: 'Age maki', kanji: '揚巻', blurb: 'Empanados e crocantes, servidos quentes.', addons: rollAddons },
   { id: 'temakis', name: 'Temakis', jp: 'Temaki', kanji: '手巻', blurb: 'Cone de alga montado na hora para comer com as mãos.', addons: rollAddons },
-  { id: 'quentes', name: 'Pratos quentes', jp: 'Atatakai ryōri', kanji: '温', blurb: 'Wok, grelha e fritura japonesa.' },
-  { id: 'entradas', name: 'Entradas', jp: 'Zensai', kanji: '前菜', blurb: 'Para começar a mesa.' },
-  { id: 'sobremesas', name: 'Sobremesas', jp: 'Kanmi', kanji: '甘味', blurb: 'Doces para fechar.' },
-  { id: 'bebidas', name: 'Bebidas', jp: 'Nomimono', kanji: '飲物', blurb: 'Geladas, japonesas e de casa.' },
+  { id: 'quentes', name: 'Pratos quentes', jp: 'Atatakai ryōri', kanji: '温', blurb: 'Wok, grelha e fritura japonesa.', addons: hotAddons },
+  { id: 'entradas', name: 'Entradas', jp: 'Zensai', kanji: '前菜', blurb: 'Para começar a mesa.', addons: starterAddons },
+  { id: 'sobremesas', name: 'Sobremesas', jp: 'Kanmi', kanji: '甘味', blurb: 'Doces para fechar.', addons: dessertAddons },
+  { id: 'bebidas', name: 'Bebidas', jp: 'Nomimono', kanji: '飲物', blurb: 'Geladas, japonesas e de casa.', addons: drinkAddons },
 ]
 
 export const PRODUCTS: Product[] = [

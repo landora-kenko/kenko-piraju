@@ -3,7 +3,12 @@ import { RESTAURANT } from '../lib/config'
 
 export function Footer() {
   return (
-    <footer className="relative overflow-hidden border-t border-white/10 px-5 pb-28 pt-20 md:px-10 md:pb-10">
+    <footer className="relative isolate overflow-hidden border-t border-white/10 px-5 pb-28 pt-20 md:px-10 md:pb-8">
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 flex select-none items-center justify-center overflow-hidden">
+        <span className="whitespace-nowrap font-display font-extrabold leading-none text-transparent" style={{ fontSize: 'min(21vw, 22rem)', WebkitTextStroke: '1.5px rgba(211,17,28,.16)' }}>
+          ありがとう
+        </span>
+      </div>
       <div className="mx-auto grid max-w-[1400px] gap-12 md:grid-cols-12">
         <div className="md:col-span-5">
           <Logo />
@@ -29,14 +34,10 @@ export function Footer() {
           </ul>
         </nav>
       </div>
-      <div aria-hidden className="pointer-events-none mx-auto mt-16 max-w-[1400px] select-none overflow-hidden text-center">
-        <span className="block whitespace-nowrap font-display font-extrabold leading-[1] text-transparent" style={{ fontSize: 'min(17vw, 17rem)', WebkitTextStroke: '1.5px rgba(211,17,28,.55)' }}>
-          ありがとう
-        </span>
-      </div>
-      <div className="mx-auto mt-6 flex max-w-[1400px] flex-col justify-between gap-2 border-t border-white/10 pt-6 text-sm text-ash md:flex-row">
-        <p>© {new Date().getFullYear()} Kenko. Todos os direitos reservados.</p>
-        <p>Preços e disponibilidade sujeitos a alteração.</p>
+      <div className="mx-auto mt-24 grid max-w-[1400px] gap-2 border-t border-white/10 pt-6 text-center text-sm text-ash md:mt-32 md:grid-cols-3 md:items-center">
+        <p className="md:text-left">© {new Date().getFullYear()} Kenko. Todos os direitos reservados.</p>
+        <p>Desenvolvido por <strong className="font-bold text-washi">Landora</strong></p>
+        <p className="md:text-right">Preços e disponibilidade sujeitos a alteração.</p>
       </div>
     </footer>
   )

@@ -115,7 +115,7 @@ export function CartSheet() {
       ...(f.mode === 'mesa' ? { tableId: f.tableId } : {}),
       items: lines.map((l) => {
         const p = find(l.id)!
-        return { id: l.id, name: p.name, qty: l.qty, unit: l.unit, addons: l.addons, total: l.qty * l.unit }
+        return { id: l.id, name: p.name, qty: l.qty, unit: l.unit, addons: l.addons, ...(l.note ? { note: l.note } : {}), total: l.qty * l.unit }
       }),
       subtotal, fee, total,
       payment: { method: f.payment, ...(f.payment === 'dinheiro' && f.change ? { change: f.change } : {}) },
@@ -136,7 +136,7 @@ export function CartSheet() {
     [
       `*Pedido ${o.code}* (site Kenko)`,
       '',
-      ...o.items.map((i) => `${i.qty}x ${i.name}${i.addons.length ? ` (${i.addons.map((a) => a.name).join(', ')})` : ''} - ${money(i.total)}`),
+      ...o.items.map((i) => `${i.qty}x ${i.name}${i.addons.length ? ` (${i.addons.map((a) => a.name).join(', ')})` : ''}${i.note ? ` [${i.note}]` : ''} - ${money(i.total)}`),
       '',
       `Subtotal: ${money(o.subtotal)}`,
       o.mode === 'entrega' ? `Entrega (${o.address!.zone}): ${money(o.fee)}` : '',
@@ -203,6 +203,7 @@ export function CartSheet() {
                       </div>
                       {p.pieces && <p className="text-xs text-ash">{p.pieces}</p>}
                       {!!l.addons.length && <p className="mt-0.5 text-sm text-washi/60">{l.addons.map((a) => a.name).join(', ')}</p>}
+                      {l.note && <p className="mt-0.5 text-sm italic text-washi/50">Obs.: {l.note}</p>}
                       <div className="mt-2.5 flex items-center justify-between">
                         <div className="flex items-center border border-white/15">
                           <button className="grid h-8 w-8 place-items-center hover:bg-white/10" onClick={() => setQty(l.key, l.qty - 1)} aria-label={`Diminuir ${p.name}`}>{l.qty === 1 ? <Trash2 size={14} /> : <Minus size={14} />}</button>

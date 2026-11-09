@@ -1,6 +1,6 @@
 import { useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { animate, stagger } from 'animejs'
-import { Plus, Search, X } from 'lucide-react'
+import { ChevronDown, Plus, Search, X } from 'lucide-react'
 import { CATEGORIES, categoryById, type Product, type Tag } from '../data/menu'
 import { Photo, cropFor } from '../components/Photo'
 import { DishModal, TAG_META, TagChip } from '../components/DishModal'
@@ -13,6 +13,7 @@ import { cn, money, reducedMotion } from '../lib/utils'
 type P = Product & { available: boolean }
 const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 const FILTERS: Tag[] = ['picante', 'vegetariano', 'chef', 'novo']
+const LIMIT = 4 // 4 por linha no desktop, 2 colunas x 2 linhas no celular
 
 /** Grade que revela os pratos em cascata quando entra na tela. */
 function RevealGrid({ children, className }: { children: ReactNode; className?: string }) {
@@ -39,7 +40,7 @@ function DishCard({ p, onOpen }: { p: P; onOpen: () => void }) {
   const chef = p.tags?.includes('chef')
   return (
     <article
-      className={cn('dish spot group relative mt-3 flex cursor-pointer gap-4 border bg-white/[.03] p-4 transition-colors duration-500 sm:mt-16 sm:block sm:px-5 sm:pb-5 sm:pt-28', chef ? 'border-beni/50' : 'border-white/10 hover:border-beni/60', !p.available && 'opacity-60')}
+      className={cn('dish spot group relative mt-12 cursor-pointer border bg-white/[.03] px-3 pb-3 pt-16 transition-colors duration-500 sm:mt-16 sm:px-5 sm:pb-5 sm:pt-28', chef ? 'border-beni/50' : 'border-white/10 hover:border-beni/60', !p.available && 'opacity-60')}
       onClick={onOpen}
       onPointerMove={(e) => {
         const r = e.currentTarget.getBoundingClientRect()
@@ -47,37 +48,35 @@ function DishCard({ p, onOpen }: { p: P; onOpen: () => void }) {
         e.currentTarget.style.setProperty('--sy', `${e.clientY - r.top}px`)
       }}
     >
-      <div className={cn('relative w-28 shrink-0 self-start transition-transform sm:absolute sm:-top-14 sm:left-1/2 sm:w-40 sm:-translate-x-1/2 duration-[900ms] ease-[var(--ease-out-expo)] group-hover:-translate-y-2 group-hover:rotate-[14deg] group-hover:scale-110', !p.available && 'grayscale')}>
+      <div className={cn('absolute -top-10 left-1/2 w-24 -translate-x-1/2 transition-transform duration-[900ms] ease-[var(--ease-out-expo)] group-hover:-translate-y-2 group-hover:rotate-[14deg] group-hover:scale-110 sm:-top-14 sm:w-40', !p.available && 'grayscale')}>
         <Photo crop={cropFor(p.kind, p.id, p.photo)} alt={p.name} className="neon-disc w-full rounded-full" />
       </div>
-      <div className="min-w-0 flex-1">
-      {chef && <span className="absolute left-0 top-0 bg-beni px-2.5 py-1 text-xs font-bold">Escolha do sushiman</span>}
+      {chef && <span className="absolute left-0 top-0 bg-beni px-2 py-0.5 text-[10px] font-bold sm:px-2.5 sm:py-1 sm:text-xs">Escolha do sushiman</span>}
       <div className="flex items-baseline justify-between gap-3">
-        <h3 className="font-display text-xl font-bold leading-tight">
+        <h3 className="font-display text-base font-bold leading-tight sm:text-xl">
           <button className="text-left after:absolute after:inset-0 focus-visible:outline-offset-8" onClick={(e) => { e.stopPropagation(); onOpen() }}>{p.name}</button>
         </h3>
-        {p.jp && <span className="shrink-0 font-display text-sm italic text-ash">{p.jp}</span>}
+        {p.jp && <span className="hidden shrink-0 font-display text-sm italic text-ash sm:inline">{p.jp}</span>}
       </div>
-      <p className="mt-2 line-clamp-2 text-sm sm:min-h-[2.9rem] leading-relaxed text-washi/65">{p.desc}</p>
-      <div className="mt-3 flex min-h-5 flex-wrap gap-x-3">{p.tags?.filter((t) => t !== 'chef').slice(0, 2).map((t) => <TagChip key={t} t={t} />)}</div>
-      <div className="mt-4 flex items-end justify-between border-t border-white/10 pt-4">
+      <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-washi/65 sm:mt-2 sm:min-h-[2.9rem] sm:text-sm">{p.desc}</p>
+      <div className="mt-2 hidden min-h-5 flex-wrap gap-x-3 sm:flex">{p.tags?.filter((t) => t !== 'chef').slice(0, 2).map((t) => <TagChip key={t} t={t} />)}</div>
+      <div className="mt-3 flex items-end justify-between border-t border-white/10 pt-3 sm:mt-4 sm:pt-4">
         <div>
-          <p className="font-display text-2xl font-bold tabular-nums">{money(p.price)}</p>
-          {p.pieces && <p className="text-xs text-ash">{p.pieces}</p>}
+          <p className="font-display text-lg font-bold tabular-nums sm:text-2xl">{money(p.price)}</p>
+          {p.pieces && <p className="text-[11px] text-ash sm:text-xs">{p.pieces}</p>}
         </div>
         {p.available ? (
           <button
             ref={btn}
             onClick={(e) => { e.stopPropagation(); add(p); flyToCart(btn.current) }}
             aria-label={`Adicionar ${p.name} à sacola`}
-            className="relative z-10 grid h-11 w-11 place-items-center rounded-full bg-beni transition-all duration-500 hover:rotate-90 hover:bg-shu active:scale-90"
+            className="relative z-10 grid h-9 w-9 place-items-center rounded-full bg-beni transition-all duration-500 hover:rotate-90 hover:bg-shu active:scale-90 sm:h-11 sm:w-11"
           >
-            <Plus size={20} />
+            <Plus size={18} />
           </button>
         ) : (
-          <span className="text-sm font-medium text-ash">Esgotado hoje</span>
+          <span className="text-xs font-medium text-ash sm:text-sm">Esgotado hoje</span>
         )}
-      </div>
       </div>
     </article>
   )
@@ -91,6 +90,7 @@ export function Menu() {
   const [q, setQ] = useState('')
   const [tags, setTags] = useState<Tag[]>([])
   const [open, setOpen] = useState<string | null>(null)
+  const [more, setMore] = useState<Record<string, boolean>>({})
   const bar = useRef<HTMLDivElement>(null)
 
   const filtering = q.trim() !== '' || tags.length > 0
@@ -102,10 +102,12 @@ export function Menu() {
     ? [{ id: 'busca', name: `${filtered.length} ${filtered.length === 1 ? 'resultado' : 'resultados'}`, blurb: '', items: filtered }]
     : CATEGORIES.filter((c) => cat === 'todos' || c.id === cat).map((c) => ({ ...c, items: products.filter((p) => p.cat === c.id) }))
 
+  const showAll = (id: string) => filtering || cat !== 'todos' || !!more[id]
+
   const pick = (id: string) => {
     setCat(id)
     setQ(''); setTags([])
-    document.getElementById('cardapio-lista')?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' })
+    document.getElementById('cardapio-grid')?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' })
   }
   const openProduct = products.find((p) => p.id === open)
 
@@ -135,7 +137,7 @@ export function Menu() {
       </div>
 
       {/* categorias */}
-      <div id="cardapio-lista" className="sticky top-[4.3rem] z-30 mt-10 border-y border-white/10 bg-black/85 backdrop-blur-xl">
+      <div className="sticky top-16 z-40 mt-10 border-y border-white/10 bg-black">
         <div className="mx-auto max-w-[1400px] px-5 md:px-10">
           <div ref={bar} className="scroll-x flex gap-1 py-2" role="tablist" aria-label="Categorias do cardápio">
             {[{ id: 'todos', name: 'Tudo', kanji: '全' }, ...CATEGORIES].map((c) => {
@@ -154,7 +156,7 @@ export function Menu() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-[1400px] px-5 pb-8 md:px-10">
+      <div id="cardapio-grid" className="mx-auto max-w-[1400px] scroll-mt-36 px-5 pb-8 md:px-10">
         <div className="mt-6 flex flex-wrap items-center gap-2" aria-label="Filtros">
           <span className="mr-1 text-sm text-ash">Filtrar:</span>
           {FILTERS.map((t) => {
@@ -183,9 +185,19 @@ export function Menu() {
             )}
             {g.id === 'busca' && <p className="text-washi/70" aria-live="polite">{g.name}</p>}
             {g.items.length ? (
-              <RevealGrid className="grid grid-cols-1 gap-x-6 gap-y-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {g.items.map((p) => <DishCard key={p.id} p={p} onOpen={() => setOpen(p.id)} />)}
-              </RevealGrid>
+              <>
+                <RevealGrid className="grid grid-cols-2 gap-x-3 gap-y-0 sm:gap-x-6 lg:grid-cols-4">
+                  {(showAll(g.id) ? g.items : g.items.slice(0, LIMIT)).map((p) => <DishCard key={p.id} p={p} onOpen={() => setOpen(p.id)} />)}
+                </RevealGrid>
+                {!filtering && cat === 'todos' && g.items.length > LIMIT && (
+                  <div className="mt-8 flex justify-center">
+                    <button className="btn btn-ghost btn-sm" aria-expanded={!!more[g.id]} onClick={() => setMore((m) => ({ ...m, [g.id]: !m[g.id] }))}>
+                      {more[g.id] ? 'Ver menos' : `Ver todos (${g.items.length})`}
+                      <span className="dot"><ChevronDown size={16} className={cn('transition-transform duration-500', more[g.id] && 'rotate-180')} /></span>
+                    </button>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="mt-8 border border-dashed border-white/20 p-10 text-center">
                 <p className="font-display text-2xl font-bold">Nenhum prato com esses filtros.</p>

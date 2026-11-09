@@ -72,7 +72,7 @@ function OrderCard({ o }: { o: Order }) {
       <p className="mt-0.5 text-sm"><span className="bg-beni px-1.5 py-0.5 text-xs font-bold">{o.mode === 'entrega' ? 'Entrega' : o.mode === 'retirada' ? 'Retirada' : `Mesa ${TABLES.find((t) => t.id === o.tableId)?.label ?? ''}`}</span> {o.customer.name}, {o.customer.phone}</p>
       {o.address && <p className="mt-1 text-sm text-washi/70">{o.address.street}, {o.address.number}. {o.address.zone}{o.address.ref ? `, ${o.address.ref}` : ''}</p>}
       <ul className="mt-3 space-y-0.5 border-y border-white/10 py-2 text-sm">
-        {o.items.map((i, k) => <li key={k}>{i.qty}x {i.name}{i.addons.length ? <span className="text-ash"> ({i.addons.map((a) => a.name).join(', ')})</span> : null}</li>)}
+        {o.items.map((i, k) => <li key={k}>{i.qty}x {i.name}{i.addons.length ? <span className="text-ash"> ({i.addons.map((a) => a.name).join(', ')})</span> : null}{i.note ? <span className="text-ash italic"> [{i.note}]</span> : null}</li>)}
       </ul>
       <p className="mt-2 flex justify-between text-sm"><span className="text-washi/70">{o.payment.method === 'pix' ? 'Pix' : o.payment.method === 'cartao' ? 'Cartão' : `Dinheiro${o.payment.change ? `, troco p/ ${o.payment.change}` : ''}`}{o.hashi ? ', com hashi' : ''}</span><strong>{money(o.total)}</strong></p>
       {o.notes && <p className="mt-2 border-l-2 border-beni pl-2 text-sm text-washi/80">{o.notes}</p>}

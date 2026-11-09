@@ -16,6 +16,7 @@ export interface OrderItem {
   qty: number
   unit: number
   addons: Addon[]
+  note?: string
   total: number
 }
 

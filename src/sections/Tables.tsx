@@ -24,11 +24,17 @@ function CountUp({ value }: { value: number }) {
   return <span ref={ref} className="tabular-nums">0</span>
 }
 
-const CORE = '#ffd9d2'
 const RED = '#ff2d1f'
 
+/** Cores por estado: a planta é neon vermelha, o estado da mesa é lido pela cor. */
+const PAL = {
+  livre: { stroke: '#4ade80', fill: 'rgba(74,222,128,.15)', chair: 'rgba(74,222,128,.34)', chairLine: 'rgba(74,222,128,.7)', text: '#eafff1', sub: '#8fe6ae' },
+  reservada: { stroke: '#fbbf24', fill: 'rgba(251,191,36,.10)', chair: 'rgba(251,191,36,.22)', chairLine: 'rgba(251,191,36,.55)', text: '#ffeab0', sub: '#d7b04a' },
+  ocupada: { stroke: '#4d4249', fill: '#171214', chair: '#1b1518', chairLine: '#2c2328', text: '#6b6067', sub: '#5b5158' },
+} as const
+
 type ShapeProps = { t: TableDef; inset?: number } & SVGProps<SVGElement>
-/** Contorno da mesa; `inset` encolhe para desenhar o "prato" interno. */
+/** Contorno do tampo; `inset` encolhe para desenhar detalhes internos. */
 function Shape({ t, inset = 0, ...p }: ShapeProps) {
   const i = inset
   const q = p as SVGProps<SVGCircleElement> & SVGProps<SVGRectElement>
@@ -38,155 +44,187 @@ function Shape({ t, inset = 0, ...p }: ShapeProps) {
   return <rect x={-60 + i} y={-32 + i} width={120 - 2 * i} height={64 - 2 * i} rx={3} {...(q as SVGProps<SVGRectElement>)} />
 }
 
-function Chairs({ t, status }: { t: TableDef; status: TableStatus }) {
-  const fill = status === 'livre' ? 'rgba(255,90,74,.6)' : status === 'reservada' ? 'rgba(255,45,31,.3)' : '#240a0d'
-  if (t.shape === 'square') return <><circle fill={fill} cx={-40} cy={0} r={8} /><circle fill={fill} cx={40} cy={0} r={8} /></>
-  if (t.shape === 'round') return <>{[0, 90, 180, 270].map((a) => <circle key={a} fill={fill} r={8} cx={Math.cos((a + 45) * Math.PI / 180) * 46} cy={Math.sin((a + 45) * Math.PI / 180) * 46} />)}</>
-  if (t.shape === 'low') return <>{[-36, 0, 36].flatMap((x) => [<rect key={'a' + x} fill={fill} x={x - 13} y={-56} width={26} height={16} rx={3} />, <rect key={'b' + x} fill={fill} x={x - 13} y={40} width={26} height={16} rx={3} />])}</>
+/** Cadeira vista de cima: assento e encosto virado para fora. */
+function Chair({ x, y, a, fill, line }: { x: number; y: number; a: number; fill: string; line: string }) {
+  return (
+    <g transform={`translate(${x} ${y}) rotate(${a + 90})`}>
+      <rect x={-8} y={-6} width={16} height={13} rx={4} fill={fill} stroke={line} strokeWidth={1} />
+      <rect x={-8} y={-9.5} width={16} height={3.5} rx={1.75} fill={line} />
+    </g>
+  )
+}
+
+function Seats({ t, status }: { t: TableDef; status: TableStatus }) {
+  const c = PAL[status]
+  if (t.shape === 'square') return <><Chair x={-40} y={0} a={180} fill={c.chair} line={c.chairLine} /><Chair x={40} y={0} a={0} fill={c.chair} line={c.chairLine} /></>
+  if (t.shape === 'round') return <>{[45, 135, 225, 315].map((a) => <Chair key={a} a={a} x={Math.cos(a * Math.PI / 180) * 46} y={Math.sin(a * Math.PI / 180) * 46} fill={c.chair} line={c.chairLine} />)}</>
+  if (t.shape === 'low') return <>{[-36, 0, 36].flatMap((x) => [-48, 48].map((y) => <rect key={`${x}${y}`} x={x - 12} y={y - 10} width={24} height={20} rx={5} fill={c.chair} stroke={c.chairLine} strokeWidth={1} />))}</>
   return null
 }
 
-function TableShape({ t, status, selected, onPick }: { t: TableDef; status: TableStatus; selected: boolean; onPick: () => void }) {
+function TableShape({ t, status, selected, dim, onPick }: { t: TableDef; status: TableStatus; selected: boolean; dim: boolean; onPick: () => void }) {
+  const c = PAL[status]
   const free = status === 'livre'
-  const res = status === 'reservada'
   const short = t.id.startsWith('B') ? t.id.slice(1) : t.label.replace(/\D/g, '') || t.id
-  const reach = t.shape === 'low' ? 80 : t.shape === 'stool' ? 24 : 54
+  const reach = t.shape === 'low' ? 82 : t.shape === 'stool' ? 24 : 58
   return (
-    <g transform={`translate(${t.x} ${t.y})`}>
+    <g transform={`translate(${t.x} ${t.y})`} style={{ opacity: dim ? 0.22 : 1, transition: 'opacity .35s' }}>
       <g
-        className={cn('tbl cursor-pointer outline-none', free && 'is-free', res && 'is-res')}
-        style={{ transformBox: 'fill-box', transformOrigin: 'center', ['--d' as string]: `${(hash(t.id) % 25) / 10}s` }}
-        role="button" tabIndex={0}
+        className={cn('tbl cursor-pointer outline-none', free && 'is-free')}
+        style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+        role="button" tabIndex={dim ? -1 : 0}
         aria-label={`${t.label}, ${t.seats} ${t.seats === 1 ? 'lugar' : 'lugares'}, ${STATUS_LABEL[status].toLowerCase()}`}
         aria-pressed={selected}
         onClick={onPick}
         onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), onPick())}
       >
-        <Chairs t={t} status={status} />
+        <Seats t={t} status={status} />
         <g className="tbl-in" style={{ transformBox: 'fill-box', transformOrigin: 'center' }}>
-          {free && (
+          {free && <g className="hot" style={{ filter: 'url(#glow-hot)' }}><Shape t={t} stroke={c.stroke} strokeWidth={8} fill="none" /></g>}
+          <Shape t={t} stroke={c.stroke} strokeWidth={free ? 2.2 : 1.6} strokeDasharray={status === 'reservada' ? '5 4' : undefined} fill={c.fill} style={free ? { filter: 'url(#glow-soft)' } : undefined} />
+          {t.shape === 'round' && <circle r={20} fill="none" stroke={c.stroke} strokeOpacity={0.35} />}
+          {t.shape === 'square' && <Shape t={t} inset={9} stroke={c.stroke} strokeOpacity={0.35} fill="none" />}
+          {t.shape === 'stool' && <circle r={9} fill="none" stroke={c.stroke} strokeOpacity={0.35} />}
+          {t.shape === 'low' && (
             <>
-              <g className="hot" style={{ filter: 'url(#glow-hot)' }}><Shape t={t} stroke={RED} strokeWidth={8} fill="none" /></g>
-              <g style={{ filter: 'url(#glow)' }}><Shape t={t} stroke={RED} strokeWidth={4} fill="rgba(255,45,31,.12)" /></g>
-              <Shape t={t} className="core" stroke={CORE} strokeWidth={1.5} fill="none" />
-              {t.shape !== 'stool' && <Shape t={t} inset={9} stroke={RED} strokeOpacity={0.5} strokeWidth={1} fill="none" />}
+              <Shape t={t} inset={8} stroke={c.stroke} strokeOpacity={0.3} fill="none" />
+              <circle cx={-34} cy={0} r={3.5} fill="none" stroke={c.stroke} strokeOpacity={0.55} />
+              <circle cx={34} cy={0} r={3.5} fill="none" stroke={c.stroke} strokeOpacity={0.55} />
             </>
           )}
-          {res && (
-            <g className="res-blink" style={{ filter: 'url(#glow-soft)' }}>
-              <Shape t={t} stroke={RED} strokeWidth={2} strokeDasharray="5 4" fill="rgba(255,45,31,.05)" />
-            </g>
-          )}
-          {status === 'ocupada' && <Shape t={t} fill="#1b0608" stroke="#3d0c11" strokeWidth={1.5} />}
-          <text textAnchor="middle" dy={t.shape === 'stool' ? 4.5 : 1} style={free ? { filter: 'url(#glow-soft)' } : undefined}
-            className={cn('pointer-events-none font-display text-[15px] font-extrabold', free ? 'fill-[#ffe6e1]' : res ? 'fill-shu/75' : 'fill-[#5c1b21]')}>{short}</text>
-          {t.shape !== 'stool' && <text textAnchor="middle" dy={16} className={cn('pointer-events-none text-[10px]', free ? 'fill-[#ffb3a8]' : res ? 'fill-shu/50' : 'fill-[#4a1519]')}>{t.seats} lug.</text>}
+          <text textAnchor="middle" dy={t.shape === 'stool' ? 4.5 : -1} className="pointer-events-none font-display text-[16px] font-extrabold" fill={c.text}>{short}</text>
+          {t.shape !== 'stool' && <text textAnchor="middle" dy={13} className="pointer-events-none text-[10px]" fill={c.sub}>{t.seats} lug.</text>}
         </g>
-        {free && <circle r={reach - 6} className="free-pulse fill-none stroke-shu" strokeWidth={1} opacity={0} />}
-        <circle className="focus fill-none stroke-shu opacity-0" r={reach + 4} strokeWidth={2} />
-        {selected && <circle r={reach + 4} className="sel-ring fill-none stroke-[#ffd9d2]" strokeWidth={1.6} strokeDasharray="3 6" style={{ filter: 'url(#glow-soft)' }} />}
+        {free && <circle r={reach - 8} className="free-pulse fill-none" stroke={c.stroke} strokeWidth={1} opacity={0} />}
+        <circle className="focus fill-none stroke-white opacity-0" r={reach + 4} strokeWidth={2} />
+        {selected && <circle r={reach + 5} className="sel-ring fill-none stroke-white" strokeWidth={1.6} strokeDasharray="3 6" />}
       </g>
     </g>
   )
 }
 
-const NeonText = ({ children, ...p }: { children: string } & SVGProps<SVGTextElement>) => (
-  <g className="zone-neon">
-    <text {...p} style={{ filter: 'url(#glow)' }} className={cn(p.className, 'fill-shu')} opacity={0.7}>{children}</text>
-    <text {...p} className={cn(p.className, 'fill-[#ffd9d2]')} opacity={0.85}>{children}</text>
-  </g>
-)
-
-function Plan({ map, selected, onPick }: { map: TableMap; selected: string | null; onPick: (id: string) => void }) {
-  const open = openStatus().open
+/** Etiqueta de zona, sobre a borda da área. */
+function Tag({ x, y, name, jp }: { x: number; y: number; name: string; jp?: string }) {
+  const w = Math.round(name.length * 7 + (jp ? jp.length * 14 + 14 : 0) + 22)
   return (
-    <svg viewBox="0 0 900 560" className="w-full min-w-[640px]" role="group" aria-label="Mapa do salão do Kenko">
+    <g className="zone-neon" transform={`translate(${x} ${y})`}>
+      <rect y={-11} width={w} height={22} rx={4} fill="#060203" stroke="rgba(255,45,31,.6)" />
+      <text x={11} y={4.5} className="fill-washi font-sans text-[12.5px] font-medium">{name}</text>
+      {jp && <text x={11 + name.length * 7 + 7} y={4.5} className="fill-shu font-display text-[12.5px] font-bold">{jp}</text>}
+    </g>
+  )
+}
+
+function Plant({ x, y }: { x: number; y: number }) {
+  return (
+    <g className="zone-neon" transform={`translate(${x} ${y})`} fill="none" stroke="rgba(255,45,31,.55)" strokeLinecap="round">
+      <circle r={11} fill="rgba(255,45,31,.07)" />
+      {[0, 72, 144, 216, 288].map((a) => <path key={a} d="M0 0 Q4 -8 0 -15" transform={`rotate(${a})`} />)}
+      <circle r={2} fill="rgba(255,45,31,.6)" stroke="none" />
+    </g>
+  )
+}
+
+function Plan({ map, selected, need, onPick }: { map: TableMap; selected: string | null; need: number; onPick: (id: string) => void }) {
+  const open = openStatus().open
+  const wall = { fill: 'none', strokeLinecap: 'square' as const }
+  return (
+    <svg viewBox="0 0 900 570" className="w-full min-w-[680px]" role="group" aria-label="Planta do salão do Kenko">
       <defs>
         <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
           <feGaussianBlur in="SourceGraphic" stdDeviation="2.4" result="a" /><feGaussianBlur in="SourceGraphic" stdDeviation="8" result="b" />
           <feMerge><feMergeNode in="b" /><feMergeNode in="a" /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
-        <filter id="glow-hot" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="10" /></filter>
+        <filter id="glow-hot" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="9" /></filter>
         <filter id="glow-soft" x="-60%" y="-60%" width="220%" height="220%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="1.6" result="a" /><feGaussianBlur in="SourceGraphic" stdDeviation="4.5" result="b" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="1.4" result="a" /><feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b" />
           <feMerge><feMergeNode in="b" /><feMergeNode in="a" /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
-        <filter id="floor-blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="26" /></filter>
-        <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M30 0H0V30" fill="none" stroke="rgba(255,45,31,.07)" strokeWidth="1" /></pattern>
-        <linearGradient id="sweep" x1="0" x2="1"><stop offset="0" stopColor={RED} stopOpacity="0" /><stop offset=".5" stopColor="#ff6b5c" stopOpacity=".16" /><stop offset="1" stopColor={RED} stopOpacity="0" /></linearGradient>
+        <pattern id="wood" width="18" height="18" patternUnits="userSpaceOnUse" patternTransform="rotate(32)"><path d="M0 0H18" stroke="rgba(255,255,255,.035)" /></pattern>
+        <pattern id="deck" width="14" height="14" patternUnits="userSpaceOnUse"><path d="M0 7H14" stroke="rgba(255,255,255,.04)" /></pattern>
       </defs>
       <style>{`
-        .free-pulse{animation:fp 2.8s ease-out infinite;transform-box:fill-box;transform-origin:center}
-        @keyframes fp{0%{opacity:.6;transform:scale(.75)}100%{opacity:0;transform:scale(1.3)}}
-        .core{animation:breathe 3.2s ease-in-out infinite;animation-delay:var(--d,0s)}
-        @keyframes breathe{0%,100%{opacity:.82}50%{opacity:1}}
-        .res-blink{animation:rb 3.6s steps(1,end) infinite;animation-delay:var(--d,0s)}
-        @keyframes rb{0%{opacity:.85}46%{opacity:.85}48%{opacity:.3}50%{opacity:.85}52%{opacity:.4}54%,100%{opacity:.85}}
+        .free-pulse{animation:fp 3s ease-out infinite;transform-box:fill-box;transform-origin:center}
+        @keyframes fp{0%{opacity:.55;transform:scale(.8)}100%{opacity:0;transform:scale(1.3)}}
         .hot{opacity:0;transition:opacity .35s}
-        .tbl:hover .hot,.tbl:focus-visible .hot{opacity:.95}
+        .tbl:hover .hot,.tbl:focus-visible .hot{opacity:.9}
         .tbl-in{transition:transform .4s cubic-bezier(.16,1,.3,1)}
-        .tbl:hover .tbl-in{transform:scale(1.07)}
+        .tbl:hover .tbl-in{transform:scale(1.06)}
         .tbl:focus-visible .focus{opacity:1}
         .sel-ring{transform-box:fill-box;transform-origin:center;animation:spin-slow 9s linear infinite}
-        .sweep{animation:sw 9s linear infinite}
-        @keyframes sw{0%{transform:translateX(-220px)}55%,100%{transform:translateX(1000px)}}
         .sign-on{animation:flick 7s steps(1,end) infinite}
-        @keyframes flick{0%,100%{opacity:1}61%{opacity:1}62%{opacity:.25}63%{opacity:1}64%{opacity:.5}65%{opacity:1}}
-        @media (prefers-reduced-motion:reduce){.free-pulse,.core,.res-blink,.sel-ring,.sweep,.sign-on{animation:none}}
+        @keyframes flick{0%,100%{opacity:1}61%{opacity:1}62%{opacity:.25}63%{opacity:1}64%{opacity:.55}65%{opacity:1}}
+        @media (prefers-reduced-motion:reduce){.free-pulse,.sel-ring,.sign-on{animation:none}}
       `}</style>
 
-      {/* chão: grade e manchas de luz */}
-      <rect x="14" y="14" width="872" height="532" fill="url(#grid)" />
-      <g filter="url(#floor-blur)" fill={RED}>
-        <ellipse cx="310" cy="80" rx="210" ry="30" opacity=".22" />
-        <ellipse cx="258" cy="350" rx="215" ry="130" opacity=".13" />
-        <ellipse cx="640" cy="275" rx="140" ry="160" opacity=".15" />
-        <ellipse cx="710" cy="485" rx="160" ry="48" opacity=".12" />
+      {/* piso */}
+      <rect x="24" y="24" width="852" height="512" fill="url(#wood)" />
+
+      {/* paredes, com vão na porta */}
+      <g className="zone-neon">
+        <path d="M110 536H876V24H24V536H40" {...wall} stroke={RED} strokeWidth={5} style={{ filter: 'url(#glow)' }} />
+        <path d="M110 536H876V24H24V536H40" {...wall} stroke="#ffd9d2" strokeWidth={1.2} strokeOpacity={0.8} />
+        {/* janelas na parede esquerda */}
+        {[150, 216].map((y) => <path key={y} d={`M24 ${y}V${y + 52}`} stroke="#0a0304" strokeWidth={7} />)}
+        {[150, 216].map((y) => <path key={'w' + y} d={`M21 ${y}V${y + 52}M27 ${y}V${y + 52}`} stroke="#ffd9d2" strokeWidth={1} strokeOpacity={0.7} />)}
+        {/* porta */}
+        <path d="M110 536V466" stroke="#ffd9d2" strokeWidth={2} />
+        <path d="M40 536A70 70 0 0 1 110 466" fill="none" stroke="rgba(255,217,210,.45)" strokeDasharray="3 4" />
+        <text x="40" y="556" className="fill-washi font-sans text-[12px] font-medium">Entrada</text>
       </g>
-      <rect className="zone-neon" x="14" y="14" width="872" height="532" fill="none" stroke="rgba(255,45,31,.45)" strokeWidth="1.5" style={{ filter: 'url(#glow-soft)' }} />
 
       {/* letreiro */}
       <g className="zone-neon">
-        <g className={open ? 'sign-on' : undefined} opacity={open ? 1 : 0.35}>
-          <rect x="650" y="26" width="200" height="64" rx="8" fill="none" stroke={RED} strokeWidth="3" style={{ filter: 'url(#glow)' }} />
-          <rect x="650" y="26" width="200" height="64" rx="8" fill="none" stroke={CORE} strokeWidth="1.2" />
-          <text x="750" y="73" textAnchor="middle" className="font-display text-[34px] font-extrabold" fill={RED} style={{ filter: 'url(#glow)' }}>{open ? '営業中' : '準備中'}</text>
-          <text x="750" y="73" textAnchor="middle" className="font-display text-[34px] font-extrabold" fill="#ffe6e1">{open ? '営業中' : '準備中'}</text>
+        <g className={open ? 'sign-on' : undefined} opacity={open ? 1 : 0.4}>
+          <rect x="676" y="40" width="168" height="50" rx="8" fill="none" stroke={RED} strokeWidth="3" style={{ filter: 'url(#glow)' }} />
+          <rect x="676" y="40" width="168" height="50" rx="8" fill="none" stroke="#ffd9d2" strokeWidth="1.1" />
+          <text x="760" y="76" textAnchor="middle" className="font-display text-[28px] font-extrabold" fill="#ffe6e1" style={{ filter: 'url(#glow-soft)' }}>{open ? '営業中' : '準備中'}</text>
         </g>
+        <text x="760" y="104" textAnchor="middle" className="fill-ash font-sans text-[11px]">{open ? 'Aberto agora' : 'Fechado agora'}</text>
       </g>
 
-      {/* balcão */}
-      <NeonText x="120" y="40" className="font-display text-[13px] italic">{ZONES.balcao.name}</NeonText>
-      <rect className="zone-neon" x="116" y="60" width="388" height="36" fill="rgba(255,45,31,.06)" stroke={RED} strokeWidth="1.6" style={{ filter: 'url(#glow-soft)' }} />
-      <NeonText x="516" y="84" className="font-display text-[18px] font-extrabold">{ZONES.balcao.jp}</NeonText>
+      {/* balcão do sushiman */}
+      <rect className="zone-neon" x="100" y="40" width="430" height="100" rx="6" fill="none" stroke="rgba(255,45,31,.45)" strokeDasharray="2 7" strokeWidth="1.5" />
+      <g className="zone-neon">
+        <rect x="116" y="56" width="398" height="40" rx="5" fill="rgba(255,45,31,.07)" stroke={RED} strokeWidth="1.8" style={{ filter: 'url(#glow-soft)' }} />
+        <rect x="124" y="63" width="300" height="26" rx="3" fill="none" stroke="rgba(255,217,210,.35)" />
+        {[168, 262, 356, 450].map((x) => (
+          <g key={x}><circle cx={x} cy={76} r={6} fill="rgba(255,217,210,.18)" stroke="rgba(255,217,210,.6)" /><circle cx={x} cy={76} r={1.6} fill="#ffd9d2" /></g>
+        ))}
+        <rect x="438" y="64" width="64" height="24" rx="3" fill="rgba(255,255,255,.04)" stroke="rgba(255,217,210,.35)" />
+        <text x="470" y="80" textAnchor="middle" className="fill-ash font-sans text-[9px]">caixa</text>
+      </g>
+      <Tag x={108} y={140} name={ZONES.balcao.name} jp={ZONES.balcao.jp} />
 
       {/* salão */}
-      <rect className="zone-neon" x="64" y="204" width="388" height="292" fill="none" stroke="rgba(255,45,31,.5)" strokeDasharray="2 7" strokeWidth="1.5" style={{ filter: 'url(#glow-soft)' }} />
-      <NeonText x="76" y="228" className="font-display text-[13px] italic">{ZONES.salao.name}</NeonText>
-      <text x="438" y="486" textAnchor="end" className="fill-shu/[.09] font-display text-[64px] font-extrabold">{ZONES.salao.jp}</text>
+      <rect x="64" y="204" width="388" height="270" rx="6" fill="rgba(255,45,31,.035)" stroke="rgba(255,45,31,.45)" strokeDasharray="2 7" strokeWidth="1.5" className="zone-neon" />
+      <Tag x={76} y={204} name={ZONES.salao.name} jp={ZONES.salao.jp} />
 
-      {/* tatame */}
-      <rect className="zone-neon" x="520" y="130" width="240" height="290" fill="rgba(255,45,31,.04)" stroke={RED} strokeOpacity=".6" strokeWidth="1.5" style={{ filter: 'url(#glow-soft)' }} />
-      {[0, 1, 2, 3, 4].map((i) => <rect key={i} x="528" y={138 + i * 56} width="224" height="50" fill="none" stroke="rgba(255,45,31,.14)" />)}
-      <NeonText x="528" y="120" className="font-display text-[13px] italic">{ZONES.tatame.name + ', sem sapatos'}</NeonText>
-      <text x="752" y="412" textAnchor="end" className="fill-shu/[.1] font-display text-[56px] font-extrabold">{ZONES.tatame.jp}</text>
+      {/* tatame, plataforma elevada */}
+      <g className="zone-neon">
+        <rect x="512" y="108" width="256" height="300" rx="4" fill="none" stroke="rgba(255,45,31,.3)" />
+        <rect x="520" y="116" width="240" height="284" fill="rgba(255,45,31,.04)" stroke={RED} strokeWidth="1.8" style={{ filter: 'url(#glow-soft)' }} />
+        {[0, 1, 2, 3].flatMap((r) => [0, 1].map((c) => (
+          <g key={`${r}${c}`}>
+            <rect x={524 + c * 116} y={120 + r * 70} width={112} height={66} fill="none" stroke="rgba(255,140,120,.26)" />
+            <rect x={529 + c * 116} y={125 + r * 70} width={102} height={56} fill="none" stroke="rgba(255,140,120,.12)" />
+          </g>
+        )))}
+        <text x="640" y="391" textAnchor="middle" className="fill-ash font-sans text-[10.5px]">Sapatos na entrada do tatame</text>
+      </g>
+      <Tag x={528} y={116} name="Tatame" jp={ZONES.tatame.jp} />
 
       {/* varanda */}
-      <rect className="zone-neon" x="560" y="438" width="300" height="94" fill="none" stroke={RED} strokeOpacity=".5" strokeDasharray="7 6" strokeWidth="1.5" style={{ filter: 'url(#glow-soft)' }} />
-      <NeonText x="852" y="526" textAnchor="end" className="font-display text-[13px] italic">{ZONES.varanda.name}</NeonText>
-      {[836, 590].map((x) => <circle key={x} cx={x} cy={512} r={9} fill="rgba(255,45,31,.18)" stroke="rgba(255,45,31,.45)" />)}
-
-      {/* entrada */}
       <g className="zone-neon">
-        <path d="M40 546h90" stroke={RED} strokeWidth="4" style={{ filter: 'url(#glow)' }} />
-        <path d="M40 546h90" stroke={CORE} strokeWidth="1.4" />
-        <text x="52" y="533" className="fill-[#ffb3a8] text-[12px]">Entrada</text>
+        <rect x="560" y="420" width="300" height="112" fill="url(#deck)" stroke={RED} strokeOpacity={0.55} strokeDasharray="7 6" strokeWidth="1.5" />
+        {Array.from({ length: 13 }, (_, i) => <circle key={i} cx={572 + i * 23} cy={526} r={1.8} fill="#ffd9d2" fillOpacity={0.7} />)}
       </g>
+      <Tag x={568} y={420} name={ZONES.varanda.name} jp={ZONES.varanda.jp} />
 
-      {/* varredura de luz */}
-      <rect className="sweep" x="0" y="14" width="200" height="532" fill="url(#sweep)" pointerEvents="none" style={{ mixBlendMode: 'screen' }} />
+      {/* plantas */}
+      <Plant x={52} y={52} /><Plant x={850} y={150} /><Plant x={850} y={400} /><Plant x={590} y={514} /><Plant x={844} y={514} /><Plant x={470} y={452} />
 
-      {TABLES.map((t) => <TableShape key={t.id} t={t} status={map[t.id] ?? 'livre'} selected={selected === t.id} onPick={() => onPick(t.id)} />)}
+      {TABLES.map((t) => <TableShape key={t.id} t={t} status={map[t.id] ?? 'livre'} selected={selected === t.id} dim={need > 0 && ((map[t.id] ?? 'livre') !== 'livre' || t.seats < need)} onPick={() => onPick(t.id)} />)}
     </svg>
   )
 }
@@ -223,8 +261,8 @@ function Reserve({ t, status, onClose }: { t: TableDef; status: TableStatus; onC
         </div>
         <button onClick={onClose} aria-label="Fechar painel da mesa" className="grid h-9 w-9 place-items-center hover:bg-white/10"><X size={18} /></button>
       </div>
-      <p className={cn('mt-4 inline-flex items-center gap-2 border px-3 py-1 text-sm font-medium', status === 'livre' ? 'border-washi/40 text-washi' : 'border-beni text-shu')}>
-        <span className={cn('h-2 w-2 rounded-full', status === 'livre' ? 'bg-washi' : 'bg-beni')} /> {STATUS_LABEL[status]} agora
+      <p className={cn('mt-4 inline-flex items-center gap-2 border px-3 py-1 text-sm font-medium', status === 'livre' ? 'border-[#4ade80]/60 text-[#4ade80]' : status === 'reservada' ? 'border-[#fbbf24]/60 text-[#fbbf24]' : 'border-white/20 text-ash')}>
+        <span className={cn('h-2 w-2 rounded-full', status === 'livre' ? 'bg-[#4ade80]' : status === 'reservada' ? 'bg-[#fbbf24]' : 'bg-ash')} /> {STATUS_LABEL[status]} agora
       </p>
 
       {status !== 'livre' ? (
@@ -276,6 +314,7 @@ export function Tables() {
   const title = useSplit<HTMLHeadingElement>()
   const [map, setMap] = useState<TableMap>({})
   const [sel, setSel] = useState<string | null>(null)
+  const [need, setNeed] = useState(0)
   const plan = useRef<HTMLDivElement>(null)
 
   useEffect(() => store.subscribeTables(setMap), [])
@@ -320,7 +359,7 @@ export function Tables() {
             <p data-reveal className="mt-4 max-w-xl text-lg text-washi/70">Escolha uma mesa livre no mapa e peça a reserva. O mapa muda quando a casa atualiza o salão.</p>
           </div>
           <div data-reveal className="flex items-stretch gap-px border border-white/12 bg-white/12" aria-live="polite">
-            {([['livre', 'Livres', 'text-[#ffe6e1] [text-shadow:0_0_6px_#ff2d1f,0_0_22px_#ff2d1f,0_0_48px_rgba(255,45,31,.7)]'], ['reservada', 'Reservadas', 'text-shu/80 [text-shadow:0_0_14px_rgba(255,45,31,.6)]'], ['ocupada', 'Ocupadas', 'text-[#6b1f26]']] as const).map(([k, l, c]) => (
+            {([['livre', 'Livres', 'text-[#4ade80]'], ['reservada', 'Reservadas', 'text-[#fbbf24]'], ['ocupada', 'Ocupadas', 'text-[#7a6e75]']] as const).map(([k, l, c]) => (
               <div key={k} className="min-w-24 flex-1 bg-black px-5 py-3">
                 <p className={cn('font-display text-4xl font-extrabold', c)}><CountUp value={counts[k]} /></p>
                 <p className="text-sm text-ash">{l}</p>
@@ -332,12 +371,20 @@ export function Tables() {
         <div className="mt-12 grid min-w-0 grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_400px] [&>*]:min-w-0">
           <div data-reveal ref={plan} onPointerMove={spot} className="plan-box relative isolate border border-shu/30 bg-black p-3 shadow-[0_0_46px_rgba(255,45,31,.16),inset_0_0_70px_rgba(255,45,31,.07)] md:p-6">
             <div className="plan-spot pointer-events-none absolute inset-0 -z-0" />
-            <div className="scroll-x relative -mx-1"><Plan map={map} selected={sel} onPick={(id) => setSel(id)} /></div>
-            <p className="mt-2 text-xs text-ash md:hidden">Deslize o mapa para os lados para ver todo o salão.</p>
-            <ul className="relative mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-washi/70">
-              <li className="flex items-center gap-2"><span className="h-3.5 w-3.5 border border-[#ffd9d2] bg-shu/15 shadow-[0_0_10px_2px_rgba(255,45,31,.8)]" /> Livre, acesa</li>
-              <li className="flex items-center gap-2"><span className="h-3.5 w-3.5 border border-dashed border-shu shadow-[0_0_6px_rgba(255,45,31,.6)]" /> Reservada, tracejada</li>
-              <li className="flex items-center gap-2"><span className="h-3.5 w-3.5 border border-[#3d0c11] bg-[#1b0608]" /> Ocupada, apagada</li>
+            <div className="relative mb-3 flex flex-wrap items-center gap-2" role="group" aria-label="Filtrar mesas por número de pessoas">
+              <span className="mr-1 text-sm text-washi/75">Quantas pessoas?</span>
+              {[[0, 'Qualquer'], [2, '2'], [4, '4'], [6, '6']].map(([n, l]) => (
+                <button key={n} aria-pressed={need === n} onClick={() => { setNeed(n as number); setSel(null) }}
+                  className={cn('h-9 min-w-9 border px-3 text-sm font-medium transition-colors', need === n ? 'border-beni bg-beni text-white' : 'border-white/15 text-washi/80 hover:border-white/40')}>{l}</button>
+              ))}
+              {need > 0 && <span className="text-sm text-ash" aria-live="polite">{TABLES.filter((t) => (map[t.id] ?? 'livre') === 'livre' && t.seats >= need).length} mesas livres para {need} ou mais</span>}
+            </div>
+            <div className="scroll-x relative -mx-1"><Plan map={map} selected={sel} need={need} onPick={(id) => setSel(id)} /></div>
+            <p className="mt-2 text-xs text-ash md:hidden">Deslize a planta para os lados para ver todo o salão.</p>
+            <ul className="relative mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-washi/75">
+              <li className="flex items-center gap-2"><span className="h-3.5 w-3.5 rounded-sm border border-[#4ade80] bg-[#4ade80]/20 shadow-[0_0_8px_rgba(74,222,128,.6)]" /> Livre</li>
+              <li className="flex items-center gap-2"><span className="h-3.5 w-3.5 rounded-sm border border-dashed border-[#fbbf24] bg-[#fbbf24]/10" /> Reservada</li>
+              <li className="flex items-center gap-2"><span className="h-3.5 w-3.5 rounded-sm border border-[#4d4249] bg-[#171214]" /> Ocupada</li>
               {store.demo && <li className="ml-auto border border-white/20 px-2 py-0.5 text-xs text-ash">Dados de demonstração</li>}
             </ul>
           </div>
@@ -349,7 +396,7 @@ export function Tables() {
                 <div>
                   <span className="hanko mx-auto mb-4 h-14 w-14 text-3xl">席</span>
                   <p className="font-display text-2xl font-bold">Toque em uma mesa.</p>
-                  <p className="mx-auto mt-2 max-w-xs text-washi/70">As mesas livres acendem em neon. Escolha uma para ver os detalhes e reservar.</p>
+                  <p className="mx-auto mt-2 max-w-xs text-washi/70">Verde é livre, amarelo é reservada e cinza é ocupada. Escolha uma mesa livre para reservar.</p>
                 </div>
               </div>
             )}

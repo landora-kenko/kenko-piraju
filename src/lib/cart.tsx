@@ -7,6 +7,7 @@ export interface CartLine {
   id: string
   qty: number
   addons: Addon[]
+  note?: string
   unit: number
 }
 
@@ -16,7 +17,7 @@ interface Ctx {
   lines: CartLine[]
   count: number
   subtotal: number
-  add: (p: Product, qty?: number, addons?: Addon[]) => void
+  add: (p: Product, qty?: number, addons?: Addon[], note?: string) => void
   setQty: (key: string, qty: number) => void
   clear: () => void
   open: boolean
@@ -61,13 +62,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   )
   const find = useCallback((id: string) => products.find((p) => p.id === id), [products])
 
-  const add = useCallback((p: Product, qty = 1, addons: Addon[] = []) => {
+  const add = useCallback((p: Product, qty = 1, addons: Addon[] = [], note = '') => {
+    const n = note.trim().slice(0, 120)
     const price = (overrides[p.id]?.price ?? p.price) + addons.reduce((s, a) => s + a.price, 0)
-    const key = p.id + '|' + addons.map((a) => a.id).sort().join(',')
+    const key = p.id + '|' + addons.map((a) => a.id).sort().join(',') + (n ? '|' + n : '')
     setLines((ls) => {
       const i = ls.findIndex((l) => l.key === key)
       if (i >= 0) return ls.map((l, j) => (j === i ? { ...l, qty: l.qty + qty } : l))
-      return [...ls, { key, id: p.id, qty, addons, unit: price }]
+      return [...ls, { key, id: p.id, qty, addons, unit: price, ...(n ? { note: n } : {}) }]
     })
     setPulse((n) => n + 1)
   }, [overrides])

@@ -12,11 +12,17 @@ const LINKS = [
   { id: 'visite', label: 'Visite', icon: MapPin },
 ]
 
-export function Logo({ className }: { className?: string }) {
+export function Logo({ className, tagline }: { className?: string; tagline?: boolean }) {
   return (
-    <a href="/" className={cn('flex items-center gap-2.5', className)} aria-label="Kenko, página inicial">
-      <span className="hanko h-8 w-8 text-lg">健</span>
-      <span className="font-display text-xl font-extrabold tracking-tight">Kenko</span>
+    <a href="/" className={cn('group flex items-center gap-3', className)} aria-label="Kenko, página inicial">
+      <span className="hanko h-8 w-8 text-lg transition-transform duration-500 group-hover:-rotate-6">健</span>
+      <span className="font-display text-xl font-extrabold leading-none tracking-tight">Kenko</span>
+      {tagline && (
+        <>
+          <span className="hidden h-4 w-px bg-white/20 lg:block" />
+          <span className="hidden text-[11px] tracking-[.28em] text-ash lg:block">PIRAJU</span>
+        </>
+      )}
     </a>
   )
 }
@@ -47,41 +53,39 @@ export function Nav() {
     <button
       data-cart-btn
       onClick={() => setOpen(true)}
-      className="relative flex h-11 items-center gap-2 bg-beni pl-4 pr-3 text-sm font-bold text-white transition-colors hover:bg-shu"
+      className="group relative flex h-10 items-center gap-2.5 border border-white/20 pl-4 pr-1.5 text-[13px] font-semibold transition-colors duration-300 hover:border-beni hover:bg-beni"
       aria-label={`Abrir sacola, ${count} ${count === 1 ? 'item' : 'itens'}`}
     >
+      <ShoppingBag size={16} />
       <span className="hidden sm:inline">Sacola</span>
-      <ShoppingBag size={18} />
-      <span ref={badge} className="grid h-5 min-w-5 place-items-center rounded-full bg-black px-1 text-[11px] font-bold tabular-nums">{count}</span>
+      <span ref={badge} className={cn('grid h-6 min-w-6 place-items-center rounded-full px-1 text-[11px] font-bold tabular-nums transition-colors', count ? 'bg-beni group-hover:bg-black' : 'bg-white/10')}>{count}</span>
     </button>
   )
 
   return (
     <>
-      {/* topo */}
-      <header className="pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-4">
-        <nav
-          aria-label="Principal"
-          className={cn(
-            'pointer-events-auto flex w-full max-w-4xl items-center justify-between gap-3 border py-1.5 pl-4 pr-1.5 transition-all duration-500 md:w-auto md:gap-8 md:pl-5',
-            stuck ? 'border-white/10 bg-black/75 backdrop-blur-xl' : 'border-white/5 bg-black/35 backdrop-blur-md',
-          )}
-        >
-          <Logo />
-          <ul className="hidden items-center gap-1 md:flex">
+      <header
+        className={cn(
+          'fixed inset-x-0 top-0 z-50 border-b transition-[background-color,border-color] duration-500',
+          stuck ? 'border-white/10 bg-black/90 backdrop-blur-xl' : 'border-transparent bg-gradient-to-b from-black/70 to-transparent',
+        )}
+      >
+        <nav aria-label="Principal" className="mx-auto grid h-16 max-w-[1500px] grid-cols-[1fr_auto] items-center gap-4 px-5 md:grid-cols-[1fr_auto_1fr] md:px-10">
+          <Logo tagline />
+          <ul className="hidden items-center gap-9 md:flex">
             {LINKS.map((l) => (
               <li key={l.id}>
                 <a
                   href={`#${l.id}`}
-                  className={cn('relative px-3.5 py-2 text-sm font-medium text-washi/70 transition-colors hover:text-white', active === l.id && 'text-white')}
+                  className={cn('group/l relative block py-2 text-[13px] font-medium tracking-[.08em] text-washi/60 transition-colors duration-300 hover:text-white', active === l.id && 'text-white')}
                 >
                   {l.label}
-                  <span className={cn('absolute inset-x-3.5 -bottom-0.5 h-px origin-left bg-beni transition-transform duration-500', active === l.id ? 'scale-x-100' : 'scale-x-0')} />
+                  <span className={cn('absolute inset-x-0 bottom-0 h-px origin-center bg-beni transition-transform duration-500 ease-[var(--ease-out-expo)]', active === l.id ? 'scale-x-100' : 'scale-x-0 group-hover/l:scale-x-50')} />
                 </a>
               </li>
             ))}
           </ul>
-          {cartBtn}
+          <div className="justify-self-end">{cartBtn}</div>
         </nav>
       </header>
 

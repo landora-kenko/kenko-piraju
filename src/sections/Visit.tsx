@@ -73,7 +73,8 @@ export function Visit() {
                 title="Mapa de Piraju, SP"
                 loading="lazy"
                 src={`https://www.google.com/maps?q=${encodeURIComponent(RESTAURANT.mapQuery)}&output=embed`}
-                className="absolute inset-0 h-full w-full border-0"
+                tabIndex={-1}
+                className="pointer-events-none absolute inset-0 h-full w-full select-none border-0"
                 style={{ filter: 'invert(.92) hue-rotate(180deg) saturate(.35) contrast(1.05) brightness(.9)' }}
               />
               <div className="pointer-events-none absolute inset-0 bg-beni/10 mix-blend-color" />

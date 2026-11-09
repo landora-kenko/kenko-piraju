@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { animate, onScroll } from 'animejs'
+import { animate } from 'animejs'
 import { useReveal } from '../hooks/useReveal'
 import { useSplit } from '../hooks/useSplit'
 import { reducedMotion } from '../lib/utils'
@@ -17,34 +17,21 @@ export function About() {
   const fill = useRef<HTMLDivElement>(null)
   const box = useRef<HTMLDivElement>(null)
   const frame = useRef<HTMLDivElement>(null)
-  const img = useRef<HTMLImageElement>(null)
   const disc = useRef<HTMLDivElement>(null)
 
-  /* o kanji se enche de tinta conforme a rolagem */
+  /* entrada única, sem animação presa à rolagem */
   useEffect(() => {
-    const f = frame.current!, d = disc.current!
-    if (reducedMotion()) { f.style.clipPath = 'inset(0)'; d.style.opacity = '1' }
-    else {
-      const io = new IntersectionObserver(([e]) => {
-        if (!e.isIntersecting) return
-        io.disconnect()
-        animate(f, { clipPath: ['inset(0 0 100% 0)', 'inset(0 0 0% 0)'], duration: 1500, ease: 'outExpo' })
-        animate(d, { opacity: [0, 1], scale: [0.5, 1], rotate: [-120, 0], duration: 1600, delay: 500, ease: 'outExpo' })
-      }, { threshold: 0.2 })
-      io.observe(box.current!)
-      const par = animate(img.current!, { y: ['-7%', '7%'], ease: 'linear', autoplay: onScroll({ target: f, enter: 'top bottom', leave: 'bottom top', sync: true }) })
-      return () => { io.disconnect(); par.revert() }
-    }
-  }, [])
-
-  useEffect(() => {
-    if (reducedMotion()) { if (fill.current) fill.current.style.clipPath = 'inset(0)'; return }
-    const a = animate(fill.current!, {
-      clipPath: ['inset(100% 0 0 0)', 'inset(0% 0 0 0)'],
-      ease: 'linear',
-      autoplay: onScroll({ target: box.current!, enter: 'bottom 85%', leave: 'center 40%', sync: true }),
-    })
-    return () => { a.revert() }
+    const f = frame.current!, d = disc.current!, k = fill.current!
+    if (reducedMotion()) { f.style.clipPath = 'inset(0)'; d.style.opacity = '1'; k.style.clipPath = 'inset(0)'; return }
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return
+      io.disconnect()
+      animate(f, { clipPath: ['inset(0 0 100% 0)', 'inset(0 0 0% 0)'], duration: 1400, ease: 'outExpo' })
+      animate(d, { opacity: [0, 1], scale: [0.7, 1], duration: 1200, delay: 400, ease: 'outExpo' })
+      animate(k, { clipPath: ['inset(100% 0 0 0)', 'inset(0% 0 0 0)'], duration: 1800, delay: 500, ease: 'outExpo' })
+    }, { threshold: 0.2 })
+    io.observe(box.current!)
+    return () => io.disconnect()
   }, [])
 
   return (
@@ -54,7 +41,7 @@ export function About() {
         <div className="lg:col-span-5">
           <div ref={box} className="relative mx-auto w-full max-w-[470px] pb-14 lg:sticky lg:top-28">
             <div ref={frame} className="relative aspect-[4/5] w-[80%] overflow-hidden bg-[#120506]" style={{ clipPath: 'inset(0 0 100% 0)' }}>
-              <img ref={img} src="/img/tobiko.webp" alt="Uramaki coberto de ovas laranja, segurado por hashi sobre o molho shoyu" loading="lazy" decoding="async" className="absolute -top-[8%] left-0 h-[116%] w-full object-cover object-[50%_28%]" />
+              <img src="/img/tobiko.webp" alt="Uramaki coberto de ovas laranja, segurado por hashi sobre o molho shoyu" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover object-[50%_28%]" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-wine/30" />
             </div>
             <div ref={disc} className="neon-disc absolute -bottom-0 -left-4 w-[46%] rounded-full opacity-0 md:-left-8">
