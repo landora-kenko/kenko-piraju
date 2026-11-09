@@ -91,6 +91,8 @@ O endereço fica `https://<ID-DO-PROJETO>.web.app`. O comando `npm run deploy` u
 
 ## 7. Deploy automático a cada alteração (GitHub Actions)
 
+> **Desligado.** O workflow agora só roda manualmente. A publicação é feita com `npm run deploy` (passo 6), sem chave de serviço no GitHub. Use este passo só se quiser religar o deploy automático: troque `workflow_dispatch:` por `push: branches: [main]` no arquivo do workflow.
+
 O arquivo `.github/workflows/firebase-hosting.yml` publica o site toda vez que algo entra no `main`.
 
 **7.1 Chave de serviço do Firebase**

@@ -1,8 +1,8 @@
 name: Deploy Firebase Hosting
 
+# Deploy automático desligado: o site é publicado manualmente (npm run deploy).
+# Este workflow só roda se alguém clicar em Actions > Run workflow (e só funciona com a chave de serviço cadastrada).
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 jobs:
