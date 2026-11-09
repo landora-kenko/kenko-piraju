@@ -5,7 +5,7 @@ import { reducedMotion } from '../lib/utils'
 /** Abertura: a logo do Kenko surge com um brilho vermelho e a cortina (noren) se abre. */
 export function Preloader({ onDone, onReveal }: { onDone: () => void; onReveal: () => void }) {
   const root = useRef<HTMLDivElement>(null)
-  const [gone, setGone] = useState(false)
+  const [gone, setGone] = useState(() => { try { return !!sessionStorage.getItem('kenko:seen') || reducedMotion() } catch { return reducedMotion() } })
 
   useEffect(() => {
     const seen = (() => { try { return sessionStorage.getItem('kenko:seen') } catch { return null } })()
@@ -22,7 +22,8 @@ export function Preloader({ onDone, onReveal }: { onDone: () => void; onReveal: 
         setGone(true); onDone()
       },
     })
-    tl.add(svg.createDrawable(el.querySelector('.enso-mask')!), { draw: ['0 0', '0 1'], duration: 1800, ease: 'inOutSine' }, 0)
+    tl.add(el.querySelector('.enso-svg')!, { opacity: [0, 1], duration: 1 }, 0)
+      .add(svg.createDrawable(el.querySelector('.enso-mask')!), { draw: ['0 0', '0 1'], duration: 1800, ease: 'inOutSine' }, 0)
       .add(el.querySelector('.pre-sun')!, { scale: [0.4, 1], opacity: [0, 1], duration: 1200, ease: 'outExpo' }, 500)
       .add(el.querySelector('.pre-logo')!, { opacity: [0, 1], scale: [0.8, 1], duration: 1100, ease: 'outExpo' }, 750)
       .add(el.querySelector('.pre-center')!, { opacity: [1, 0], scale: [1, 1.12], duration: 500, ease: 'inQuad' }, 2100)
@@ -39,7 +40,7 @@ export function Preloader({ onDone, onReveal }: { onDone: () => void; onReveal: 
       <div className="noren-r absolute inset-y-0 right-0 w-1/2 bg-black" />
       <div className="pre-center relative grid h-[min(56vw,250px)] w-[min(56vw,250px)] place-items-center">
         <div className="pre-sun absolute inset-[20%] rounded-full opacity-0" style={{ background: 'radial-gradient(circle, rgba(211,17,28,.38) 0%, rgba(211,17,28,.14) 45%, rgba(211,17,28,0) 70%)' }} />
-        <svg viewBox="0 0 1254 1254" className="absolute inset-0 h-full w-full" aria-hidden>
+        <svg viewBox="0 0 1254 1254" className="enso-svg absolute inset-0 h-full w-full" style={{ opacity: 0 }} aria-hidden>
           <defs>
             <filter id="soft" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="14" /></filter>
             <mask id="paint" maskUnits="userSpaceOnUse" x="0" y="0" width="1254" height="1254">
