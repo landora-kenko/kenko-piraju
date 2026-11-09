@@ -16,10 +16,10 @@ export function Logo({ className, tagline, size = 'md' }: { className?: string; 
   return (
     <a href="/" className={cn('group flex items-center gap-3', className)} aria-label="Kenko Sushi Bar, página inicial">
       <img
-        src="/img/logo-sm.webp" alt="" width={size === 'lg' ? 96 : 44} height={size === 'lg' ? 96 : 44}
-        className={cn('shrink-0 rounded-full transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:rotate-[8deg] group-hover:scale-105', size === 'lg' ? 'h-24 w-24' : 'h-11 w-11')}
+        src={size === 'lg' ? '/img/logo-wide.webp' : '/img/logo-wide-sm.webp'} alt=""
+        width={size === "lg" ? 300 : 140} height={size === "lg" ? 111 : 52}
+        className={cn('shrink-0 transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:scale-[1.04]', size === 'lg' ? 'h-auto w-[min(78vw,300px)]' : 'h-[52px] w-auto -my-1')}
       />
-      {size !== 'lg' && <span className="font-display text-xl font-extrabold leading-none tracking-tight">Kenko</span>}
       {tagline && (
         <>
           <span className="hidden h-4 w-px bg-white/20 lg:block" />
