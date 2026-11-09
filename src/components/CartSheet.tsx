@@ -154,7 +154,7 @@ export function CartSheet() {
 
   return (
     <div className="fixed inset-0 z-[90]" role="dialog" aria-modal="true" aria-label="Sacola e pedido">
-      <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={close} />
+      <div className="absolute inset-0 bg-black/80" onClick={close} />
       <div ref={panel} className="absolute inset-y-0 right-0 flex w-full max-w-[470px] flex-col border-l border-white/15 bg-[#080303]">
         {/* topo */}
         <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">

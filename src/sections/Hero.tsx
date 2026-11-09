@@ -90,7 +90,7 @@ export function Hero({ revealed }: { revealed: boolean }) {
         <h1 className="wm-h1 absolute inset-x-0 flex justify-center" aria-label="Kenko, culinária japonesa em Piraju">
           <span className="wordmark" aria-hidden>
             <span className="hk" style={hidden}>
-              <img src="/img/wordmark.webp" width={1324} height={388} alt="" draggable={false} className="block h-auto w-full select-none drop-shadow-[0_10px_30px_rgba(0,0,0,.55)]" />
+              <img src="/img/wordmark.webp" width={1324} height={388} alt="" draggable={false} className="block h-auto w-full select-none" />
             </span>
           </span>
         </h1>
@@ -101,14 +101,14 @@ export function Hero({ revealed }: { revealed: boolean }) {
             <div className="ex-intro" style={hidden} data-in>
               <div className="ex-float relative [container-type:inline-size]">
                 <div className="plate-zoom relative aspect-square">
-                  <img src="/img/plate.webp" alt="" aria-hidden className="plate-glow absolute inset-0 h-full w-full scale-[1.1] opacity-55 blur-[36px] saturate-[1.9]" />
+                  <div aria-hidden className="plate-glow absolute -inset-[8%] rounded-full opacity-70" style={{ background: "radial-gradient(circle, rgba(255,70,50,.42) 0%, rgba(211,17,28,.22) 48%, rgba(211,17,28,0) 72%)" }} />
                   <div className="plate-ring absolute -inset-[1.6%] rounded-full" style={hidden} />
                   <div className="plate-intro h-full w-full">
                     <div className="plate-spin h-full w-full">
                       <img
                         src="/img/plate.webp" width={1600} height={1600} fetchPriority="high" draggable={false}
                         alt="Prato redondo com niguiris, sashimis e rolinhos variados do Kenko"
-                        className="h-full w-full select-none drop-shadow-[0_30px_40px_rgba(0,0,0,.6)]"
+                        className="h-full w-full select-none"
                       />
                     </div>
                   </div>
@@ -127,7 +127,7 @@ export function Hero({ revealed }: { revealed: boolean }) {
         <div className="hero-copy absolute inset-x-0 bottom-0 z-10 px-5 pb-24 md:px-10 md:pb-12">
           <div className="mx-auto flex max-w-[1500px] flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div className="max-w-md">
-              <p data-in="up" style={hidden} className={`mb-3 inline-flex items-center gap-2.5 border px-3 py-1.5 text-[13px] font-medium backdrop-blur md:mb-4 md:text-sm ${status.open ? 'border-[#4ade80]/40 bg-[#052e16]/60 text-[#86efac]' : 'border-[#ef4444]/40 bg-[#2a0608]/60 text-[#fca5a5]'}`}>
+              <p data-in="up" style={hidden} className={`mb-3 inline-flex items-center gap-2.5 border px-3 py-1.5 text-[13px] font-medium md:mb-4 md:text-sm ${status.open ? 'border-[#4ade80]/40 bg-[#052e16]/60 text-[#86efac]' : 'border-[#ef4444]/40 bg-[#2a0608]/60 text-[#fca5a5]'}`}>
                 <span className={`h-2 w-2 rounded-full ${status.open ? 'live-dot-green bg-[#4ade80]' : 'bg-[#ef4444]'}`} />
                 {status.text}
               </p>

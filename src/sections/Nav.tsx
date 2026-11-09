@@ -70,7 +70,7 @@ export function Nav() {
       <header
         className={cn(
           'fixed inset-x-0 top-0 z-50 border-b transition-[background-color,border-color] duration-500',
-          stuck ? 'border-white/10 bg-black/90 backdrop-blur-xl' : 'border-transparent bg-gradient-to-b from-black/70 to-transparent',
+          stuck ? 'border-white/10 bg-black/90' : 'border-transparent bg-gradient-to-b from-black/70 to-transparent',
         )}
       >
         <nav aria-label="Principal" className="mx-auto grid h-16 max-w-[1500px] grid-cols-[1fr_auto] items-center gap-4 px-5 md:grid-cols-[1fr_auto_1fr] md:px-10">
@@ -93,7 +93,7 @@ export function Nav() {
       </header>
 
       {/* dock mobile */}
-      <nav aria-label="Atalhos" className="fixed inset-x-3 bottom-3 z-50 border border-white/10 bg-black/80 backdrop-blur-xl md:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <nav aria-label="Atalhos" className="fixed inset-x-3 bottom-3 z-50 border border-white/10 bg-black/80 md:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <ul className="grid grid-cols-5">
           {LINKS.map((l) => (
             <li key={l.id}>

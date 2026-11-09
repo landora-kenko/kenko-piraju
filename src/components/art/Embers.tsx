@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { reducedMotion } from '../../lib/utils'
 
 /** Brasas e pétalas vermelhas subindo lentamente (canvas, pausa fora da tela). */
-export function Embers({ count = 46, className }: { count?: number; className?: string }) {
+export function Embers({ count = 28, className }: { count?: number; className?: string }) {
   const ref = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -10,7 +10,7 @@ export function Embers({ count = 46, className }: { count?: number; className?: 
     const ctx = c.getContext('2d')!
     if (!ctx || reducedMotion()) return
     let w = 0, h = 0, raf = 0, vis = true
-    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5)
     const resize = () => {
       w = c.clientWidth; h = c.clientHeight
       c.width = w * dpr; c.height = h * dpr

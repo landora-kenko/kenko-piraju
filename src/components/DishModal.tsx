@@ -96,7 +96,7 @@ export function DishModal({ product, onClose }: { product: Product & { available
 
   return (
     <div className="fixed inset-0 z-[80] grid place-items-end md:place-items-center" role="dialog" aria-modal="true" aria-label={product.name}>
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/85" onClick={onClose} />
       <div ref={panel} className="cut relative grid max-h-[94svh] w-full max-w-5xl overflow-y-auto border border-white/15 bg-[#0a0505] md:grid-cols-[1fr_1.05fr]">
         <button data-close onClick={onClose} aria-label="Fechar" className="absolute right-3 top-3 z-20 grid h-10 w-10 place-items-center bg-black/60 hover:bg-beni"><X size={20} /></button>
 
