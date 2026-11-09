@@ -6,7 +6,28 @@ import { RESERVATION_SLOTS, RESTAURANT, openStatus, waLink } from '../lib/config
 import { store, type TableMap } from '../lib/store'
 import { useReveal } from '../hooks/useReveal'
 import { useSplit } from '../hooks/useSplit'
-import { cn, hash, reducedMotion } from '../lib/utils'
+import { cn, reducedMotion } from '../lib/utils'
+
+/** No celular a planta é mostrada por área, em escala legível, sem rolagem lateral. */
+const VIEWS = [
+  { id: 'salao', label: 'Salão', box: '48 188 420 306' },
+  { id: 'balcao', label: 'Balcão', box: '88 30 460 140' },
+  { id: 'tatame', label: 'Tatame', box: '498 92 272 322' },
+  { id: 'varanda', label: 'Varanda', box: '546 404 330 142' },
+  { id: 'tudo', label: 'Tudo', box: '0 0 900 570' },
+] as const
+const VIEW_ZONE: Record<string, string> = { salao: 'salao', balcao: 'balcao', tatame: 'tatame', varanda: 'varanda' }
+
+function useIsMobile() {
+  const [m, setM] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches)
+  useEffect(() => {
+    const q = window.matchMedia('(max-width: 767px)')
+    const f = () => setM(q.matches)
+    q.addEventListener('change', f)
+    return () => q.removeEventListener('change', f)
+  }, [])
+  return m
+}
 
 const STATUS_LABEL: Record<TableStatus, string> = { livre: 'Livre', ocupada: 'Ocupada', reservada: 'Reservada' }
 
@@ -124,11 +145,11 @@ function Plant({ x, y }: { x: number; y: number }) {
   )
 }
 
-function Plan({ map, selected, need, onPick }: { map: TableMap; selected: string | null; need: number; onPick: (id: string) => void }) {
+function Plan({ map, selected, need, onPick, box }: { map: TableMap; selected: string | null; need: number; onPick: (id: string) => void; box?: string }) {
   const open = openStatus().open
   const wallPath = 'M110 536H876V24H24V536H40'
   return (
-    <svg viewBox="0 0 900 570" className="w-full min-w-[680px]" role="group" aria-label="Planta do salão do Kenko">
+    <svg viewBox={box ?? '0 0 900 570'} className="w-full" role="group" aria-label="Planta do salão do Kenko">
       <defs>
         <filter id="sh" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#000" floodOpacity=".55" /></filter>
         <pattern id="planks" width="64" height="16" patternUnits="userSpaceOnUse"><path d="M0 .5H64" stroke="rgba(0,0,0,.32)" /><path d="M20 0V16" stroke="rgba(0,0,0,.2)" /><path d="M0 1.5H64" stroke="rgba(255,255,255,.035)" /></pattern>
@@ -306,6 +327,8 @@ export function Tables() {
   const [map, setMap] = useState<TableMap>({})
   const [sel, setSel] = useState<string | null>(null)
   const [need, setNeed] = useState(0)
+  const [view, setView] = useState<(typeof VIEWS)[number]['id']>('salao')
+  const mobile = useIsMobile()
   const plan = useRef<HTMLDivElement>(null)
 
   useEffect(() => store.subscribeTables(setMap), [])
@@ -362,8 +385,20 @@ export function Tables() {
               ))}
               {need > 0 && <span className="text-sm text-ash" aria-live="polite">{TABLES.filter((t) => (map[t.id] ?? 'livre') === 'livre' && t.seats >= need).length} mesas livres para {need} ou mais</span>}
             </div>
-            <div className="scroll-x relative -mx-1"><Plan map={map} selected={sel} need={need} onPick={(id) => setSel(id)} /></div>
-            <p className="mt-2 text-xs text-ash md:hidden">Deslize a planta para os lados para ver todo o salão.</p>
+            {mobile && (
+              <div className="relative mb-3 flex gap-1.5 overflow-x-auto pb-1" role="tablist" aria-label="Área do restaurante">
+                {VIEWS.map((v) => {
+                  const free = v.id === 'tudo' ? 0 : TABLES.filter((t) => t.zone === VIEW_ZONE[v.id] && (map[t.id] ?? 'livre') === 'livre').length
+                  return (
+                    <button key={v.id} role="tab" aria-selected={view === v.id} onClick={() => setView(v.id)}
+                      className={cn('shrink-0 border px-3.5 py-2 text-sm transition-colors', view === v.id ? 'border-beni bg-beni text-white' : 'border-white/15 text-washi/80')}>
+                      {v.label}{v.id !== 'tudo' && <span className={cn('ml-1.5 text-xs', view === v.id ? 'text-white/80' : 'text-[#4ade80]')}>{free}</span>}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+            <div className="relative"><Plan map={map} selected={sel} need={need} onPick={(id) => setSel(id)} box={mobile ? VIEWS.find((v) => v.id === view)!.box : undefined} /></div>
             <ul className="relative mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-washi/75">
               <li className="flex items-center gap-2"><span className="h-3.5 w-3.5 rounded-full bg-[#3fb56b]" /> Livre</li>
               <li className="flex items-center gap-2"><span className="h-3.5 w-3.5 rounded-full bg-[#e4a82f]" /> Reservada</li>
