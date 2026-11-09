@@ -144,13 +144,13 @@ export function Menu() {
       {/* categorias */}
       <div className="sticky top-16 z-40 mt-10 border-y border-white/10 bg-black">
         <div className="mx-auto max-w-[1400px] px-5 md:px-10">
-          <div ref={bar} className="grid grid-cols-6 gap-1 py-2 md:flex md:overflow-x-auto md:[scrollbar-width:none]" role="tablist" aria-label="Categorias do cardápio">
+          <div ref={bar} className="flex flex-wrap justify-center gap-1 py-2 md:flex-nowrap md:justify-start md:overflow-x-auto md:[scrollbar-width:none]" role="tablist" aria-label="Categorias do cardápio">
             {[{ id: 'todos', name: 'Tudo', kanji: '全' }, ...CATEGORIES].map((c) => {
               const on = !filtering && cat === c.id
               return (
                 <button
                   key={c.id} role="tab" aria-selected={on} onClick={() => pick(c.id)}
-                  className={cn('group relative flex min-w-0 flex-col items-center gap-0.5 px-0.5 py-1.5 transition-colors md:min-w-[5.5rem] md:shrink-0 md:px-4 md:py-2', on ? 'bg-beni text-white' : 'text-washi/70 hover:bg-white/[.06] hover:text-white')}
+                  className={cn('group relative flex w-[calc((100%-1.25rem)/6)] min-w-0 flex-col items-center gap-0.5 px-0.5 py-1.5 transition-colors md:w-auto md:min-w-[5.5rem] md:shrink-0 md:px-4 md:py-2', on ? 'bg-beni text-white' : 'text-washi/70 hover:bg-white/[.06] hover:text-white')}
                 >
                   <span className={cn('font-display text-base font-extrabold leading-none md:text-xl', on ? 'text-white' : 'text-beni')}>{c.kanji}</span>
                   <span className="whitespace-nowrap text-[10.5px] font-medium md:hidden">{SHORT[c.id] ?? c.name}</span>
