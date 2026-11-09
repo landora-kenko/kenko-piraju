@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import { Bell, Check, ChefHat, ClipboardList, LayoutGrid, LogOut, Receipt, UtensilsCrossed } from 'lucide-react'
+import { Bell, Check, ChefHat, ClipboardList, Home, LayoutGrid, LogOut, Menu, Receipt, UtensilsCrossed, X } from 'lucide-react'
 import { CATEGORIES, PRODUCTS } from '../data/menu'
 import { TABLES, ZONES, type TableStatus } from '../data/tables'
 import { store, type Order, type OrderStatus, type Overrides, type Reservation, type TableMap } from '../lib/store'
 import { cn, money } from '../lib/utils'
 
-type Tab = 'pedidos' | 'reservas' | 'mesas' | 'cardapio' | 'comandas'
+type Tab = 'inicio' | 'pedidos' | 'reservas' | 'mesas' | 'cardapio' | 'comandas'
 const TABS: { id: Tab; label: string; icon: typeof Bell }[] = [
+  { id: 'inicio', label: 'Início', icon: Home },
   { id: 'pedidos', label: 'Pedidos', icon: ClipboardList },
   { id: 'reservas', label: 'Reservas', icon: Bell },
   { id: 'mesas', label: 'Mesas', icon: LayoutGrid },
@@ -87,7 +88,8 @@ function OrderCard({ o }: { o: Order }) {
 }
 
 function Panel({ email }: { email: string }) {
-  const [tab, setTab] = useState<Tab>('pedidos')
+  const [tab, setTab] = useState<Tab>('inicio')
+  const [menu, setMenu] = useState(false)
   const [orders, setOrders] = useState<Order[]>([])
   const [res, setRes] = useState<Reservation[]>([])
   const [tables, setTables] = useState<TableMap>({})
@@ -107,12 +109,34 @@ function Panel({ email }: { email: string }) {
   const novos = orders.filter((o) => o.status === 'novo').length
   const pend = res.filter((r) => r.status === 'pendente').length
 
+  const day0 = new Date(); day0.setHours(0, 0, 0, 0)
+  const hoje = orders.filter((o) => o.createdAt >= day0.getTime() && o.status !== 'cancelado')
+  const fat = hoje.reduce((n, o) => n + o.total, 0)
+  const ticket = hoje.length ? fat / hoje.length : 0
+  const preparo = orders.filter((o) => o.status === 'preparo').length
+  const prontos = orders.filter((o) => o.status === 'pronto').length
+  const st = { livre: 0, reservada: 0, ocupada: 0 }
+  TABLES.forEach((t) => { st[tables[t.id] ?? 'livre']++ })
+  const off = Object.values(ov).filter((v) => v.available === false).length
+  const rank = new Map<string, number>()
+  hoje.forEach((o) => o.items.forEach((i) => rank.set(i.name, (rank.get(i.name) ?? 0) + i.qty)))
+  const top = [...rank.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5)
+  const recentes = orders.slice(0, 5)
+  const go = (t: Tab) => { setTab(t); window.scrollTo({ top: 0 }) }
+  const Stat = ({ label, value, sub, to, hot }: { label: string; value: string | number; sub?: string; to?: Tab; hot?: boolean }) => (
+    <button onClick={() => to && go(to)} className={cn('border p-4 text-left transition-colors', hot ? 'border-beni bg-beni/15' : 'border-white/10 bg-white/[.03]', to && 'hover:border-white/40')}>
+      <p className="text-xs text-ash">{label}</p>
+      <p className="mt-1 font-display text-3xl font-extrabold tabular-nums">{value}</p>
+      {sub && <p className="mt-0.5 text-xs text-ash">{sub}</p>}
+    </button>
+  )
+
   return (
     <div className="min-h-screen bg-black">
       <header className="sticky top-0 z-20 border-b border-white/10 bg-black/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-[1500px] flex-wrap items-center gap-x-8 gap-y-2 px-5 py-3">
-          <a href="/" className="flex items-center gap-2.5"><img src="/img/logo-sm.webp" alt="" className="h-9 w-9 rounded-full" /><span className="font-display text-xl font-extrabold">Painel</span></a>
-          <nav className="scroll-x flex flex-1 gap-1" aria-label="Seções do painel">
+        <div className="mx-auto flex max-w-[1500px] items-center gap-3 px-4 py-3 md:gap-8 md:px-5">
+          <a href="/" className="flex shrink-0 items-center gap-2.5"><img src="/img/logo-sm.webp" alt="" className="h-9 w-9 rounded-full" /><span className="font-display text-xl font-extrabold">Painel</span></a>
+          <nav className="hidden flex-1 gap-1 md:flex" aria-label="Seções do painel">
             {TABS.map((t) => (
               <button key={t.id} onClick={() => setTab(t.id)} aria-current={tab === t.id} className={cn('flex shrink-0 items-center gap-2 px-3.5 py-2 text-sm font-medium', tab === t.id ? 'bg-beni' : 'text-washi/70 hover:bg-white/10')}>
                 <t.icon size={16} /> {t.label}
@@ -121,15 +145,83 @@ function Panel({ email }: { email: string }) {
               </button>
             ))}
           </nav>
-          <div className="flex items-center gap-3 text-sm text-ash">
-            {store.demo && <span className="border border-white/20 px-2 py-0.5 text-xs">Modo demonstração (dados só neste navegador)</span>}
-            <span className="hidden sm:inline">{email}</span>
+          <span className="ml-auto text-sm font-semibold md:hidden">{TABS.find((t) => t.id === tab)?.label}</span>
+          <div className="hidden items-center gap-3 text-sm text-ash md:flex">
+            {store.demo && <span className="border border-white/20 px-2 py-0.5 text-xs">Modo demonstração</span>}
+            <span className="hidden lg:inline">{email}</span>
             {!store.demo && <button onClick={() => store.signOut()} className="flex items-center gap-1.5 hover:text-white"><LogOut size={15} /> Sair</button>}
           </div>
+          <button onClick={() => setMenu(true)} className="relative grid h-10 w-10 place-items-center border border-white/20 md:hidden" aria-label="Abrir menu">
+            <Menu size={20} />
+            {novos + pend > 0 && <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-beni px-1 text-[11px] font-bold">{novos + pend}</span>}
+          </button>
         </div>
       </header>
 
+      {menu && (
+        <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-label="Menu do painel">
+          <div className="absolute inset-0 bg-black/70" onClick={() => setMenu(false)} />
+          <aside className="absolute inset-y-0 right-0 flex w-[82%] max-w-xs flex-col border-l border-white/10 bg-[#0a0a0a] p-4">
+            <div className="mb-4 flex items-center justify-between">
+              <span className="font-display text-xl font-extrabold">Menu</span>
+              <button onClick={() => setMenu(false)} className="grid h-10 w-10 place-items-center border border-white/20" aria-label="Fechar menu"><X size={18} /></button>
+            </div>
+            <nav className="flex flex-col gap-1">
+              {TABS.map((t) => (
+                <button key={t.id} onClick={() => { setTab(t.id); setMenu(false) }} aria-current={tab === t.id} className={cn('flex items-center gap-3 px-4 py-3.5 text-left text-[15px] font-medium', tab === t.id ? 'bg-beni' : 'text-washi/80 hover:bg-white/10')}>
+                  <t.icon size={18} /> {t.label}
+                  {t.id === 'pedidos' && novos > 0 && <span className="ml-auto grid h-5 min-w-5 place-items-center rounded-full bg-white px-1 text-[11px] font-bold text-black">{novos}</span>}
+                  {t.id === 'reservas' && pend > 0 && <span className="ml-auto grid h-5 min-w-5 place-items-center rounded-full bg-white px-1 text-[11px] font-bold text-black">{pend}</span>}
+                </button>
+              ))}
+            </nav>
+            <div className="mt-auto border-t border-white/10 pt-4 text-sm text-ash">
+              {store.demo && <p className="mb-2 text-xs">Modo demonstração (dados só neste navegador)</p>}
+              <p className="mb-3 break-all">{email}</p>
+              {!store.demo && <button onClick={() => store.signOut()} className="flex items-center gap-2 text-washi"><LogOut size={16} /> Sair</button>}
+            </div>
+          </aside>
+        </div>
+      )}
+
       <main className="mx-auto max-w-[1500px] px-5 py-8">
+        {tab === 'inicio' && (
+          <div className="space-y-8">
+            <h2 className="font-display text-3xl font-extrabold">Resumo de hoje</h2>
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+              <Stat label="Pedidos novos" value={novos} sub="aguardando aceite" to="pedidos" hot={novos > 0} />
+              <Stat label="Em preparo" value={preparo} sub={`${prontos} prontos`} to="pedidos" />
+              <Stat label="Reservas pendentes" value={pend} sub={`${res.length} no total`} to="reservas" hot={pend > 0} />
+              <Stat label="Itens indisponíveis" value={off} sub={`de ${PRODUCTS.length} no cardápio`} to="cardapio" />
+              <Stat label="Pedidos hoje" value={hoje.length} />
+              <Stat label="Vendas hoje" value={money(fat)} />
+              <Stat label="Ticket médio" value={money(ticket)} />
+              <Stat label="Mesas livres" value={`${st.livre}/${TABLES.length}`} sub={`${st.ocupada} ocupadas, ${st.reservada} reservadas`} to="mesas" />
+            </div>
+            <div className="grid gap-8 lg:grid-cols-2">
+              <section>
+                <h3 className="mb-3 flex items-center justify-between border-b border-beni pb-2 font-display text-xl font-bold">Últimos pedidos<button onClick={() => go('pedidos')} className="text-sm font-normal text-ash hover:text-white">Ver todos</button></h3>
+                {recentes.length === 0 && <p className="py-4 text-sm text-ash">Nenhum pedido ainda.</p>}
+                <ul className="divide-y divide-white/10">
+                  {recentes.map((o) => (
+                    <li key={o.id} className="flex items-center justify-between gap-3 py-3 text-sm">
+                      <div className="min-w-0"><p className="truncate font-semibold">{o.customer.name} <span className="font-normal text-ash">#{o.code}</span></p><p className="text-xs text-ash">{time(o.createdAt)}, {o.mode === 'mesa' ? 'Mesa' : o.mode === 'entrega' ? 'Entrega' : 'Retirada'}, {o.status}</p></div>
+                      <span className="shrink-0 tabular-nums">{money(o.total)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+              <section>
+                <h3 className="mb-3 border-b border-beni pb-2 font-display text-xl font-bold">Mais pedidos hoje</h3>
+                {top.length === 0 && <p className="py-4 text-sm text-ash">Ainda sem vendas hoje.</p>}
+                <ul className="divide-y divide-white/10">
+                  {top.map(([n, q]) => <li key={n} className="flex justify-between py-3 text-sm"><span>{n}</span><span className="tabular-nums text-ash">{q}x</span></li>)}
+                </ul>
+              </section>
+            </div>
+          </div>
+        )}
+
         {tab === 'pedidos' && (
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
             {COLS.map((c) => {
