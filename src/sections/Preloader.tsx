@@ -37,8 +37,8 @@ export function Preloader({ onDone, onReveal }: { onDone: () => void; onReveal: 
     <div ref={root} className="fixed inset-0 z-[100] grid place-items-center" role="status" aria-label="Carregando Kenko">
       <div className="noren-l absolute inset-y-0 left-0 w-1/2 bg-black" />
       <div className="noren-r absolute inset-y-0 right-0 w-1/2 bg-black" />
-      <div className="pre-center relative grid h-[min(78vw,360px)] w-[min(78vw,360px)] place-items-center">
-        <div className="pre-sun absolute inset-[8%] rounded-full opacity-0" style={{ background: 'radial-gradient(circle, rgba(211,17,28,.38) 0%, rgba(211,17,28,.14) 45%, rgba(211,17,28,0) 70%)' }} />
+      <div className="pre-center relative grid h-[min(56vw,250px)] w-[min(56vw,250px)] place-items-center">
+        <div className="pre-sun absolute inset-[20%] rounded-full opacity-0" style={{ background: 'radial-gradient(circle, rgba(211,17,28,.38) 0%, rgba(211,17,28,.14) 45%, rgba(211,17,28,0) 70%)' }} />
         <svg viewBox="0 0 1254 1254" className="absolute inset-0 h-full w-full" aria-hidden>
           <defs>
             <filter id="soft" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="14" /></filter>
@@ -48,7 +48,7 @@ export function Preloader({ onDone, onReveal }: { onDone: () => void; onReveal: 
           </defs>
           <image href="/img/ring.webp" width="1254" height="1254" mask="url(#paint)" />
         </svg>
-        <img src="/img/logo.webp" alt="Kenko Sushi Bar" width={840} height={840} className="pre-logo relative h-[60%] w-[60%] rounded-full opacity-0" />
+        <img src="/img/logo.webp" alt="Kenko Sushi Bar" width={840} height={840} className="pre-logo relative h-[70%] w-[70%] rounded-full opacity-0" />
       </div>
     </div>
   )
