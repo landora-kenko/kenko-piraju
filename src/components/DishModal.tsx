@@ -62,7 +62,8 @@ export function DishModal({ product, onClose }: { product: Product & { available
   const panel = useRef<HTMLDivElement>(null)
   const addBtn = useRef<HTMLButtonElement>(null)
 
-  const addons = (cat.addons ?? []).filter((a) => sel.includes(a.id))
+  const allAddons = [...(cat.addons ?? []), ...(product.addons ?? [])]
+  const addons = allAddons.filter((a) => sel.includes(a.id))
   const unit = product.price + addons.reduce((s, a) => s + a.price, 0)
 
   const suggestions = useMemo(() => {
@@ -144,12 +145,12 @@ export function DishModal({ product, onClose }: { product: Product & { available
               <Stat icon={Clock} label="Preparo" value={PREP[product.cat] ?? 'Na hora'} />
             </div>
 
-            {!!cat.addons?.length && (
+            {!!allAddons.length && (
               <fieldset className="mt-7">
                 <legend className="mb-1 font-display text-xl font-bold">Quer incrementar?</legend>
                 <p className="mb-3 text-sm text-ash">Escolha quantos adicionais quiser. O valor entra no total.</p>
                 <div className="space-y-1.5">
-                  {cat.addons.map((a) => {
+                  {allAddons.map((a) => {
                     const on = sel.includes(a.id)
                     return (
                       <label key={a.id} className={cn('flex cursor-pointer items-center justify-between gap-3 border px-3.5 py-2.5 transition-colors', on ? 'border-beni bg-beni/10' : 'border-white/12 hover:border-white/30')}>
