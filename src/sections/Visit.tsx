@@ -57,7 +57,7 @@ function MapBox() {
       <div className="pointer-events-none absolute inset-0 bg-beni/10 mix-blend-color" />
       <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_80px_rgba(0,0,0,.8)]" />
       <div className="pointer-events-none absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2">
-        <span className="hanko h-12 w-12 text-2xl shadow-[0_0_40px_rgba(211,17,28,.8)]">健</span>
+        <img src="/img/logo-sm.webp" alt="Kenko" width={60} height={60} className="h-[60px] w-[60px] rounded-full shadow-[0_0_0_2px_rgba(0,0,0,.6),0_0_40px_rgba(211,17,28,.75)]" />
       </div>
       <div className="absolute bottom-4 right-4 z-30 flex flex-col border border-white/15 bg-black/70 backdrop-blur" role="group" aria-label="Zoom do mapa">
         <button onClick={() => zoom(1)} disabled={z >= 18} aria-label="Aproximar" className="grid h-10 w-10 place-items-center transition-colors hover:bg-beni disabled:opacity-30 disabled:hover:bg-transparent"><Plus size={17} strokeWidth={1.6} /></button>

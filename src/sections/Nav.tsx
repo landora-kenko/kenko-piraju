@@ -12,11 +12,14 @@ const LINKS = [
   { id: 'visite', label: 'Visite', icon: MapPin },
 ]
 
-export function Logo({ className, tagline }: { className?: string; tagline?: boolean }) {
+export function Logo({ className, tagline, size = 'md' }: { className?: string; tagline?: boolean; size?: 'md' | 'lg' }) {
   return (
-    <a href="/" className={cn('group flex items-center gap-3', className)} aria-label="Kenko, página inicial">
-      <span className="hanko h-8 w-8 text-lg transition-transform duration-500 group-hover:-rotate-6">健</span>
-      <span className="font-display text-xl font-extrabold leading-none tracking-tight">Kenko</span>
+    <a href="/" className={cn('group flex items-center gap-3', className)} aria-label="Kenko Sushi Bar, página inicial">
+      <img
+        src="/img/logo-sm.webp" alt="" width={size === 'lg' ? 96 : 44} height={size === 'lg' ? 96 : 44}
+        className={cn('shrink-0 rounded-full transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:rotate-[8deg] group-hover:scale-105', size === 'lg' ? 'h-24 w-24' : 'h-11 w-11')}
+      />
+      {size !== 'lg' && <span className="font-display text-xl font-extrabold leading-none tracking-tight">Kenko</span>}
       {tagline && (
         <>
           <span className="hidden h-4 w-px bg-white/20 lg:block" />

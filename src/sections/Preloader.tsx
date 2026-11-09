@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { animate, createTimeline, svg } from 'animejs'
+import { animate, createTimeline } from 'animejs'
 import { reducedMotion } from '../lib/utils'
 
-/** Abertura: ensō desenhado a pincel, selo 健康 e cortina (noren) que se abre. */
+/** Abertura: a logo do Kenko surge com um brilho vermelho e a cortina (noren) se abre. */
 export function Preloader({ onDone, onReveal }: { onDone: () => void; onReveal: () => void }) {
   const root = useRef<HTMLDivElement>(null)
   const [gone, setGone] = useState(false)
@@ -14,7 +14,6 @@ export function Preloader({ onDone, onReveal }: { onDone: () => void; onReveal: 
     }
     document.body.style.overflow = 'hidden'
     const el = root.current!
-    const [a, b] = svg.createDrawable(el.querySelectorAll('.enso-a, .enso-b'))
     const tl = createTimeline({
       defaults: { ease: 'inOutQuart' },
       onComplete: () => {
@@ -23,10 +22,9 @@ export function Preloader({ onDone, onReveal }: { onDone: () => void; onReveal: 
         setGone(true); onDone()
       },
     })
-    tl.add(a, { draw: ['0 0', '0 1'], duration: 1300 }, 0)
-      .add(b, { draw: ['0 0', '0 1'], duration: 1100 }, 150)
-      .add(el.querySelector('.pre-kanji')!, { opacity: [0, 1], y: [24, 0], duration: 800, ease: 'outExpo' }, 700)
-      .add(el.querySelector('.pre-sun')!, { scale: [0.2, 1], opacity: [0, 1], duration: 900, ease: 'outExpo' }, 500)
+    tl.add(el.querySelector('.pre-sun')!, { scale: [0.3, 1], opacity: [0, 1], duration: 1100, ease: 'outExpo' }, 0)
+      .add(el.querySelector('.pre-logo')!, { opacity: [0, 1], scale: [0.82, 1], rotate: [-10, 0], duration: 1200, ease: 'outExpo' }, 250)
+      .add(el.querySelector('.pre-line')!, { scaleX: [0, 1], duration: 1300, ease: 'inOutQuart' }, 500)
       .add(el.querySelector('.pre-center')!, { opacity: [1, 0], scale: [1, 1.15], duration: 500, ease: 'inQuad' }, 2000)
       .call(() => onReveal(), 2150)
       .add(el.querySelector('.noren-l')!, { x: ['0%', '-101%'], duration: 1100, ease: 'inOutExpo' }, 2150)
@@ -39,13 +37,10 @@ export function Preloader({ onDone, onReveal }: { onDone: () => void; onReveal: 
     <div ref={root} className="fixed inset-0 z-[100] grid place-items-center" role="status" aria-label="Carregando Kenko">
       <div className="noren-l absolute inset-y-0 left-0 w-1/2 bg-black" />
       <div className="noren-r absolute inset-y-0 right-0 w-1/2 bg-black" />
-      <div className="pre-center relative grid place-items-center">
-        <div className="pre-sun absolute h-28 w-28 rounded-full sun opacity-0" />
-        <svg viewBox="0 0 220 220" className="relative h-[min(60vw,260px)] w-[min(60vw,260px)]" fill="none" strokeLinecap="round">
-          <path className="enso-a" d="M118 22C60 14 18 62 24 118c6 58 60 92 112 76 50-15 72-66 52-110" stroke="#d3111c" strokeWidth="11" />
-          <path className="enso-b" d="M122 30C70 26 34 68 38 116c5 50 54 78 98 62" stroke="#f1ebe3" strokeWidth="2.2" opacity=".7" />
-        </svg>
-        <div className="pre-kanji absolute font-display text-5xl font-extrabold tracking-wide text-washi opacity-0">健康</div>
+      <div className="pre-center relative grid place-items-center justify-items-center">
+        <div className="pre-sun absolute h-[min(70vw,380px)] w-[min(70vw,380px)] rounded-full bg-beni/45 opacity-0 blur-[70px]" />
+        <img src="/img/logo.webp" alt="Kenko Sushi Bar" width={840} height={840} className="pre-logo relative h-[min(62vw,300px)] w-[min(62vw,300px)] rounded-full opacity-0" />
+        <div className="pre-line mt-8 h-px w-[min(40vw,160px)] origin-left bg-beni/80" style={{ transform: 'scaleX(0)' }} />
       </div>
     </div>
   )

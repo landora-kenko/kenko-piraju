@@ -11,7 +11,7 @@ export function Footer() {
       </div>
       <div className="mx-auto grid max-w-[1400px] gap-12 md:grid-cols-12">
         <div className="md:col-span-5">
-          <Logo />
+          <Logo size="lg" />
           <p className="mt-5 max-w-sm text-washi/70">Culinária japonesa em {RESTAURANT.city}, {RESTAURANT.state}. Peça no site, retire no balcão ou reserve sua mesa.</p>
         </div>
         <nav aria-label="Rodapé" className="grid grid-cols-2 gap-8 md:col-span-7 md:grid-cols-3">

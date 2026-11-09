@@ -44,7 +44,7 @@ function Login() {
           try { await store.signIn(email, pw) } catch { setErr('E-mail ou senha incorretos.') } finally { setBusy(false) }
         }}
       >
-        <div className="flex items-center gap-3"><span className="hanko h-10 w-10 text-xl">健</span><h1 className="font-display text-2xl font-extrabold">Painel Kenko</h1></div>
+        <div className="flex items-center gap-3"><img src="/img/logo-sm.webp" alt="" className="h-11 w-11 rounded-full" /><h1 className="font-display text-2xl font-extrabold">Painel Kenko</h1></div>
         <label className="block"><span className="mb-1.5 block text-sm text-washi/80">E-mail</span><input className={field} type="email" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} required /></label>
         <label className="block"><span className="mb-1.5 block text-sm text-washi/80">Senha</span><input className={field} type="password" autoComplete="current-password" value={pw} onChange={(e) => setPw(e.target.value)} required /></label>
         {err && <p role="alert" className="text-sm text-shu">{err}</p>}
@@ -111,7 +111,7 @@ function Panel({ email }: { email: string }) {
     <div className="min-h-screen bg-black">
       <header className="sticky top-0 z-20 border-b border-white/10 bg-black/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-[1500px] flex-wrap items-center gap-x-8 gap-y-2 px-5 py-3">
-          <a href="/" className="flex items-center gap-2.5"><span className="hanko h-8 w-8 text-lg">健</span><span className="font-display text-xl font-extrabold">Painel</span></a>
+          <a href="/" className="flex items-center gap-2.5"><img src="/img/logo-sm.webp" alt="" className="h-9 w-9 rounded-full" /><span className="font-display text-xl font-extrabold">Painel</span></a>
           <nav className="scroll-x flex flex-1 gap-1" aria-label="Seções do painel">
             {TABS.map((t) => (
               <button key={t.id} onClick={() => setTab(t.id)} aria-current={tab === t.id} className={cn('flex shrink-0 items-center gap-2 px-3.5 py-2 text-sm font-medium', tab === t.id ? 'bg-beni' : 'text-washi/70 hover:bg-white/10')}>
