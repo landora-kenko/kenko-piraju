@@ -78,7 +78,7 @@ export function Hero({ revealed }: { revealed: boolean }) {
   const hidden = { opacity: 0 }
 
   return (
-    <section id="inicio" ref={sec} className="hero-scroll relative h-[170vh]" style={{ ['--mx' as string]: 0, ['--my' as string]: 0, ['--p' as string]: 0 }}>
+    <section id="inicio" ref={sec} className="hero-scroll relative h-[170vh] md:h-[100svh]" style={{ ['--mx' as string]: 0, ['--my' as string]: 0, ['--p' as string]: 0 }}>
       <div className="sticky top-0 h-[100svh] overflow-hidden bg-black">
         <Embers className="absolute inset-0 h-full w-full" />
 
