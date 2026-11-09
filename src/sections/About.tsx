@@ -35,7 +35,7 @@ export function About() {
   }, [])
 
   return (
-    <section id="sobre" ref={root} className="relative px-5 py-24 md:px-10 md:py-36">
+    <section id="sobre" ref={root} className="relative px-5 py-14 md:px-10 md:py-36">
       <div className="mx-auto grid max-w-[1400px] gap-16 lg:grid-cols-12 lg:gap-8">
         {/* fotos + kanji */}
         <div className="lg:col-span-5">
