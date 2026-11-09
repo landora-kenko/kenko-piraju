@@ -1,0 +1,47 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Admin = qualquer usuário autenticado que tenha um documento em /admins/{uid}
+    // (crie esse documento manualmente no Console do Firebase para cada administrador).
+    function isAdmin() {
+      return request.auth != null &&
+             exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function validOrder() {
+      let d = request.resource.data;
+      return d.keys().hasAll(['code', 'mode', 'customer', 'items', 'total', 'status'])
+        && d.status == 'novo'
+        && d.mode in ['entrega', 'retirada', 'mesa']
+        && d.items is list && d.items.size() > 0 && d.items.size() <= 60
+        && d.total is number && d.total > 0 && d.total < 5000
+        && d.customer.name is string && d.customer.name.size() <= 80;
+    }
+
+    function validReservation() {
+      let d = request.resource.data;
+      return d.keys().hasAll(['tableId', 'name', 'phone', 'people', 'time', 'status'])
+        && d.status == 'pendente'
+        && d.name is string && d.name.size() <= 80
+        && d.people is number && d.people >= 1 && d.people <= 20;
+    }
+
+    match /admins/{uid}              { allow read: if request.auth != null && request.auth.uid == uid; }
+
+    // Pedidos: o cliente só cria; apenas admins leem/atualizam
+    match /orders/{id}               { allow create: if validOrder();
+                                       allow read, update, delete: if isAdmin(); }
+
+    // Reservas: o cliente só envia o pedido de reserva
+    match /reservations/{id}         { allow create: if validReservation();
+                                       allow read, update, delete: if isAdmin(); }
+
+    // Mesas e disponibilidade do cardápio: leitura pública (mesas livres ao vivo)
+    match /tables/{id}               { allow read: if true; allow write: if isAdmin(); }
+    match /menuOverrides/{id}        { allow read: if true; allow write: if isAdmin(); }
+
+    // Comandas (uso futuro: salão / PDV)
+    match /tabs/{id}                 { allow read, write: if isAdmin(); }
+  }
+}
