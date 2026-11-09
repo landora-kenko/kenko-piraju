@@ -5,11 +5,10 @@ import { reducedMotion } from '../lib/utils'
 /** Abertura: a logo do Kenko surge com um brilho vermelho e a cortina (noren) se abre. */
 export function Preloader({ onDone, onReveal }: { onDone: () => void; onReveal: () => void }) {
   const root = useRef<HTMLDivElement>(null)
-  const [gone, setGone] = useState(() => { try { return !!sessionStorage.getItem('kenko:seen') || reducedMotion() } catch { return reducedMotion() } })
+  const [gone, setGone] = useState(() => reducedMotion())
 
   useEffect(() => {
-    const seen = (() => { try { return sessionStorage.getItem('kenko:seen') } catch { return null } })()
-    if (reducedMotion() || seen) {
+    if (reducedMotion()) {
       setGone(true); onReveal(); onDone(); return
     }
     document.body.style.overflow = 'hidden'
@@ -18,7 +17,6 @@ export function Preloader({ onDone, onReveal }: { onDone: () => void; onReveal: 
       defaults: { ease: 'inOutQuart' },
       onComplete: () => {
         document.body.style.overflow = ''
-        try { sessionStorage.setItem('kenko:seen', '1') } catch { /* ignora */ }
         setGone(true); onDone()
       },
     })

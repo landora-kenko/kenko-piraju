@@ -5,7 +5,6 @@ import { Embers } from '../components/art/Embers'
 import { openStatus } from '../lib/config'
 import { reducedMotion } from '../lib/utils'
 
-const LETTERS = ['K', 'E', 'N', 'K', 'O']
 // valor por índice do alvo (tipagem do anime.js é estrita demais para funções)
 const fn = (f: (i: number) => number) => ((_: unknown, i: number) => f(i)) as never
 
@@ -88,16 +87,16 @@ export function Hero({ revealed }: { revealed: boolean }) {
         </div>
 
         {/* wordmark */}
-        <h1 className="absolute inset-x-0 top-[13svh] flex justify-center md:top-[11svh]" aria-label="Kenko, culinária japonesa em Piraju">
+        <h1 className="wm-h1 absolute inset-x-0 flex justify-center" aria-label="Kenko, culinária japonesa em Piraju">
           <span className="wordmark" aria-hidden>
-            {LETTERS.map((l, i) => (
-              <span key={i} className="hk" style={hidden}><span className="hk-i inline-block">{l}</span></span>
-            ))}
+            <span className="hk" style={hidden}>
+              <img src="/img/wordmark.webp" width={1324} height={388} alt="" draggable={false} className="block h-auto w-full select-none drop-shadow-[0_10px_30px_rgba(0,0,0,.55)]" />
+            </span>
           </span>
         </h1>
 
         {/* prato */}
-        <div className="absolute left-1/2 top-[47%] w-[min(92vw,50svh,760px)] -translate-x-1/2 -translate-y-1/2 md:top-[55%] md:w-[min(90vw,76svh,760px)]">
+        <div className="absolute left-1/2 top-[47%] w-[min(92vw,50svh,760px)] -translate-x-1/2 -translate-y-1/2 md:top-[58%] md:w-[min(90vw,68svh,760px)]">
           <div className="transition-transform duration-700 ease-out" style={{ transform: 'translate3d(calc(var(--mx) * -16px), calc(var(--my) * -10px), 0)' }}>
             <div className="ex-intro" style={hidden} data-in>
               <div className="ex-float relative [container-type:inline-size]">

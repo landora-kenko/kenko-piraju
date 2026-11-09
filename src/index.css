@@ -66,12 +66,11 @@ fieldset > legend + * { clear: both; }
 .cut { clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 22px 100%, 0 calc(100% - 22px)); }
 
 /* wordmark do hero */
-.wordmark {
-  font-family: var(--font-display); font-weight: 800; line-height: .78; letter-spacing: -.045em;
-  font-size: min(25vw, 36svh); color: var(--color-washi); white-space: nowrap;
-  user-select: none;
-}
-.wordmark span { display: inline-block; will-change: transform; }
+/* o título acompanha o prato: mesma largura e encostado no topo dele */
+.wm-h1 { --pw: min(92vw, 50svh, 760px); --pc: 47svh; --wf: 1; top: calc(var(--pc) - var(--pw) * (.45 + .293 * var(--wf))); }
+@media (min-width: 768px) { .wm-h1 { --pw: min(90vw, 68svh, 760px); --pc: 58svh; --wf: .88; } }
+.wordmark { width: calc(var(--pw) * var(--wf)); user-select: none; }
+.wordmark .hk { display: block; will-change: transform; }
 
 .sun {
   background: radial-gradient(circle at 38% 34%, #ff3a2a 0%, #d3111c 42%, #7d0710 78%, #4a0409 100%);
