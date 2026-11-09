@@ -128,8 +128,8 @@ export function Hero({ revealed }: { revealed: boolean }) {
         <div className="hero-copy absolute inset-x-0 bottom-0 z-10 px-5 pb-24 md:px-10 md:pb-12">
           <div className="mx-auto flex max-w-[1500px] flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div className="max-w-md">
-              <p data-in="up" style={hidden} className="mb-3 inline-flex items-center gap-2.5 text-[13px] md:mb-4 md:text-sm border border-white/15 bg-black/50 px-3 py-1.5 text-sm backdrop-blur">
-                <span className={`h-2 w-2 rounded-full ${status.open ? 'live-dot bg-beni' : 'bg-ash'}`} />
+              <p data-in="up" style={hidden} className={`mb-3 inline-flex items-center gap-2.5 border px-3 py-1.5 text-[13px] font-medium backdrop-blur md:mb-4 md:text-sm ${status.open ? 'border-[#4ade80]/40 bg-[#052e16]/60 text-[#86efac]' : 'border-[#ef4444]/40 bg-[#2a0608]/60 text-[#fca5a5]'}`}>
+                <span className={`h-2 w-2 rounded-full ${status.open ? 'live-dot-green bg-[#4ade80]' : 'bg-[#ef4444]'}`} />
                 {status.text}
               </p>
               <p data-in="up" style={hidden} className="hidden font-display text-2xl font-medium leading-snug text-washi sm:block md:text-[1.7rem]">

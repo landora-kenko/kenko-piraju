@@ -36,8 +36,8 @@ export function Footer() {
       </div>
       <div className="mx-auto mt-24 grid max-w-[1400px] gap-2 border-t border-white/10 pt-6 text-center text-sm text-ash md:mt-32 md:grid-cols-3 md:items-center">
         <p className="md:text-left">© {new Date().getFullYear()} Kenko. Todos os direitos reservados.</p>
-        <p>Desenvolvido por <strong className="font-bold text-washi">Landora</strong></p>
-        <p className="md:text-right">Preços e disponibilidade sujeitos a alteração.</p>
+        <p>Desenvolvido por <strong className="font-bold text-washi">Landora</strong>®</p>
+        <span aria-hidden className="hidden md:block" />
       </div>
     </footer>
   )

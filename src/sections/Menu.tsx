@@ -51,7 +51,6 @@ function DishCard({ p, onOpen }: { p: P; onOpen: () => void }) {
       <div className={cn('absolute -top-10 left-1/2 w-24 -translate-x-1/2 transition-transform duration-[900ms] ease-[var(--ease-out-expo)] group-hover:-translate-y-2 group-hover:rotate-[14deg] group-hover:scale-110 sm:-top-14 sm:w-40', !p.available && 'grayscale')}>
         <Photo crop={cropFor(p.kind, p.id, p.photo)} alt={p.name} className="neon-disc w-full rounded-full" />
       </div>
-      {chef && <span className="absolute left-0 top-0 bg-beni px-2 py-0.5 text-[10px] font-bold sm:px-2.5 sm:py-1 sm:text-xs">Escolha do sushiman</span>}
       <div className="flex items-baseline justify-between gap-3">
         <h3 className="font-display text-base font-bold leading-tight sm:text-xl">
           <button className="text-left after:absolute after:inset-0 focus-visible:outline-offset-8" onClick={(e) => { e.stopPropagation(); onOpen() }}>{p.name}</button>
@@ -78,6 +77,7 @@ function DishCard({ p, onOpen }: { p: P; onOpen: () => void }) {
           <span className="text-xs font-medium text-ash sm:text-sm">Esgotado hoje</span>
         )}
       </div>
+      {chef && <p className="-mx-3 -mb-3 mt-3 bg-beni px-3 py-1.5 text-center text-[11px] font-bold tracking-wide sm:-mx-5 sm:-mb-5 sm:mt-4 sm:text-xs">Escolha do sushiman</p>}
     </article>
   )
 }

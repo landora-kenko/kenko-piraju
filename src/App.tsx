@@ -34,6 +34,8 @@ export default function App() {
       </main>
       <Footer />
       <CartSheet />
+      <div className="tex tex-wash" aria-hidden />
+      <div className="tex tex-grain" aria-hidden />
     </CartProvider>
   )
 }
