@@ -141,7 +141,7 @@ export function Menu() {
         </div>
       </div>
 
-      <div className="sticky top-12 z-40 mt-3 bg-[#0b0506] px-5 py-1.5 md:hidden">
+      <div className="sticky top-12 z-40 mt-3 bg-[#0b0506] px-5 pb-2.5 pt-1.5 md:hidden">
             <label className="relative block">
               <span className="sr-only">Buscar no cardápio</span>
               <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-ash" />
@@ -155,7 +155,7 @@ export function Menu() {
 
 
       {/* categorias */}
-      <div className="sticky top-24 z-40 border-b border-white/10 bg-[#0b0506] md:top-16 md:mt-10 md:border-y md:bg-black">
+      <div className="sticky top-[6.25rem] z-40 border-b border-white/10 bg-[#0b0506] md:top-16 md:mt-10 md:border-y md:bg-black">
         <div className="mx-auto max-w-[1400px] px-5 md:px-10">
           <div ref={bar} className="flex flex-wrap justify-center gap-x-0.5 gap-y-0 py-0.5 md:flex-nowrap md:gap-1 md:py-2 md:justify-start md:overflow-x-auto md:[scrollbar-width:none]" role="tablist" aria-label="Categorias do cardápio">
             {[{ id: 'todos', name: 'Tudo', kanji: '全' }, ...CATEGORIES].map((c) => {
