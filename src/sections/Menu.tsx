@@ -194,9 +194,25 @@ export function Menu() {
             {g.id === 'busca' && <p className="text-washi/70" aria-live="polite">{g.name}</p>}
             {g.items.length ? (
               <>
-                <RevealGrid className="grid grid-cols-2 gap-x-3 gap-y-0 sm:gap-x-6 lg:grid-cols-4">
-                  {(showAll(g.id) ? g.items : g.items.slice(0, LIMIT)).map((p) => <DishCard key={p.id} p={p} onOpen={() => setOpen(p.id)} />)}
-                </RevealGrid>
+                {(() => {
+                  const shown = showAll(g.id) ? g.items : g.items.slice(0, LIMIT)
+                  const subs: { name: string; items: P[] }[] = []
+                  for (const p of shown) {
+                    const n = p.group ?? ''
+                    const last = subs[subs.length - 1]
+                    if (last && last.name === n) last.items.push(p)
+                    else subs.push({ name: n, items: [p] })
+                  }
+                  const titled = showAll(g.id) && g.id !== 'busca' && new Set(g.items.map((p) => p.group)).size > 1
+                  return subs.map((s) => (
+                    <div key={s.name} className={titled ? 'mt-8 first:mt-6' : ''}>
+                      {titled && s.name && <h4 className="mb-1 font-display text-lg font-bold text-beni md:text-xl">{s.name}</h4>}
+                      <RevealGrid className="grid grid-cols-2 gap-x-3 gap-y-0 sm:gap-x-6 lg:grid-cols-4">
+                        {s.items.map((p) => <DishCard key={p.id} p={p} onOpen={() => setOpen(p.id)} />)}
+                      </RevealGrid>
+                    </div>
+                  ))
+                })()}
                 {!filtering && cat === 'todos' && g.items.length > LIMIT && (
                   <div className="mt-8 flex justify-center">
                     <button className="btn btn-ghost btn-sm" aria-expanded={!!more[g.id]} onClick={() => setMore((m) => ({ ...m, [g.id]: !m[g.id] }))}>

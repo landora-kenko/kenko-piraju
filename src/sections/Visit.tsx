@@ -84,6 +84,7 @@ export function Visit() {
           <div className="space-y-11 lg:col-span-5">
             <Block kanji="所" title="Onde estamos">
               <p className="font-display text-2xl leading-snug text-washi">{RESTAURANT.address}</p>
+              <p className="mt-3 text-[15px] text-ash">Telefone: <a href={`tel:${RESTAURANT.phoneLink}`} className="text-washi underline decoration-white/30 underline-offset-4 hover:decoration-beni">{RESTAURANT.phone}</a></p>
             </Block>
 
             <Block kanji="時" title="Horários">
@@ -97,6 +98,7 @@ export function Visit() {
 
             <div data-reveal className="flex flex-wrap gap-3 pl-0 sm:pl-[3.25rem]">
               {wa && <a href={wa} target="_blank" rel="noreferrer" className="btn-lux btn-lux-solid"><WhatsIcon /> Chamar no WhatsApp</a>}
+              <a href={`tel:${RESTAURANT.phoneLink}`} className="btn-lux">Ligar</a>
               {RESTAURANT.instagram && <a href={`https://instagram.com/${RESTAURANT.instagram}`} target="_blank" rel="noreferrer" className="btn-lux"><InstaIcon /> Instagram</a>}
               <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(RESTAURANT.mapQuery)}`} target="_blank" rel="noreferrer" className="btn-lux">Abrir no mapa <ArrowUpRight size={16} strokeWidth={1.6} /></a>
             </div>

@@ -11,27 +11,29 @@ export const RESTAURANT = {
   tagline: 'Culinária japonesa em Piraju',
   city: 'Piraju',
   state: 'SP',
-  // AJUSTAR: endereço completo
-  address: 'Piraju, SP',
-  mapQuery: 'Piraju, SP',
-  // AJUSTAR: configure VITE_WHATSAPP (somente números, com 55 + DDD). Vazio = botão de WhatsApp oculto.
+  address: 'Praça José Ataliba Leonel, 18, Centro, Piraju, SP, 18800-000',
+  addressShort: 'Praça José Ataliba Leonel, 18, Centro',
+  mapQuery: 'Kenko Sushi Bar, Praça José Ataliba Leonel, 18, Centro, Piraju, SP',
+  phone: '(14) 3351-8176',
+  phoneLink: '+551433518176',
+  // WhatsApp e Instagram vêm das variáveis VITE_WHATSAPP e VITE_INSTAGRAM (secrets do GitHub)
   whatsapp: (env.VITE_WHATSAPP as string | undefined) ?? '',
-  // AJUSTAR: configure VITE_INSTAGRAM (sem @)
-  instagram: (env.VITE_INSTAGRAM as string | undefined) ?? '',
-  // AJUSTAR: horários (0 = domingo ... 6 = sábado). null = fechado
+  instagram: (env.VITE_INSTAGRAM as string | undefined) || 'kenkopiraju',
+  // Horários (0 = domingo ... 6 = sábado). null = fechado
   hours: {
-    0: ['18:00', '23:00'],
+    0: ['18:30', '23:00'],
     1: null,
-    2: ['18:00', '23:00'],
-    3: ['18:00', '23:00'],
-    4: ['18:00', '23:00'],
-    5: ['18:00', '23:30'],
-    6: ['18:00', '23:30'],
+    2: ['18:30', '23:00'],
+    3: ['18:30', '23:30'],
+    4: ['18:30', '23:00'],
+    5: ['18:30', '23:00'],
+    6: ['18:30', '23:00'],
   } as Record<number, [string, string] | null>,
   hoursText: [
-    ['Terça a quinta', '18h às 23h'],
-    ['Sexta e sábado', '18h às 23h30'],
-    ['Domingo', '18h às 23h'],
+    ['Terça', '18h30 às 23h'],
+    ['Quarta', '18h30 às 23h30'],
+    ['Quinta a sábado', '18h30 às 23h'],
+    ['Domingo', '18h30 às 23h'],
     ['Segunda', 'Fechado'],
   ],
 }
@@ -46,7 +48,7 @@ export const DELIVERY_ZONES = [
 export const MIN_DELIVERY_ORDER = 35
 
 export const RESERVATION_SLOTS = [
-  '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00',
+  '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00', '22:30',
 ]
 
 export function openStatus(now = new Date()) {
