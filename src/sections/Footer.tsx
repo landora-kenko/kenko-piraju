@@ -3,38 +3,38 @@ import { RESTAURANT } from '../lib/config'
 
 export function Footer() {
   return (
-    <footer className="relative isolate overflow-hidden border-t border-white/10 px-5 pb-28 pt-20 md:px-10 md:pb-8">
+    <footer className="relative isolate overflow-hidden border-t border-white/10 px-5 pb-20 pt-9 md:px-10 md:pb-8 md:pt-20">
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 flex select-none items-center justify-center overflow-hidden">
         <span className="whitespace-nowrap font-display font-extrabold leading-none text-transparent" style={{ fontSize: 'min(21vw, 22rem)', WebkitTextStroke: '1.5px rgba(211,17,28,.16)' }}>
           ありがとう
         </span>
       </div>
-      <div className="mx-auto grid max-w-[1400px] gap-12 md:grid-cols-12">
+      <div className="mx-auto grid max-w-[1400px] gap-6 md:grid-cols-12 md:gap-12">
         <div className="md:col-span-5">
           <Logo size="lg" />
-          <p className="mt-5 max-w-sm text-washi/70">Culinária japonesa em {RESTAURANT.city}, {RESTAURANT.state}. Peça no site, retire no balcão ou reserve sua mesa.</p>
+          <p className="mt-3 max-w-sm text-sm text-washi/70 md:mt-5 md:text-base">Culinária japonesa em {RESTAURANT.city}, {RESTAURANT.state}. Peça no site, retire no balcão ou reserve sua mesa.</p>
         </div>
-        <nav aria-label="Rodapé" className="grid grid-cols-2 gap-8 md:col-span-7 md:grid-cols-3">
-          <ul className="space-y-2.5 text-washi/75">
-            <li className="font-display text-lg font-bold text-washi">Site</li>
+        <nav aria-label="Rodapé" className="grid grid-cols-3 gap-x-4 text-sm md:col-span-7 md:gap-8 md:text-base">
+          <ul className="space-y-1.5 text-washi/75 md:space-y-2.5">
+            <li className="font-display text-base font-bold text-washi md:text-lg">Site</li>
             <li><a className="hover:text-white" href="#sobre">Sobre</a></li>
             <li><a className="hover:text-white" href="#cardapio">Cardápio</a></li>
             <li><a className="hover:text-white" href="#mesas">Mesas</a></li>
             <li><a className="hover:text-white" href="#visite">Visite</a></li>
           </ul>
-          <ul className="space-y-2.5 text-washi/75">
-            <li className="font-display text-lg font-bold text-washi">Pedidos</li>
+          <ul className="space-y-1.5 text-washi/75 md:space-y-2.5">
+            <li className="font-display text-base font-bold text-washi md:text-lg">Pedidos</li>
             <li><a className="hover:text-white" href="#cardapio">Delivery</a></li>
             <li><a className="hover:text-white" href="#cardapio">Retirada</a></li>
             <li><a className="hover:text-white" href="#mesas">Reservar mesa</a></li>
           </ul>
-          <ul className="space-y-2.5 text-washi/75">
-            <li className="font-display text-lg font-bold text-washi">Equipe</li>
+          <ul className="space-y-1.5 text-washi/75 md:space-y-2.5">
+            <li className="font-display text-base font-bold text-washi md:text-lg">Equipe</li>
             <li><a className="hover:text-white" href="/admin">Painel do restaurante</a></li>
           </ul>
         </nav>
       </div>
-      <div className="mx-auto mt-24 grid max-w-[1400px] gap-2 border-t border-white/10 pt-6 text-center text-sm text-ash md:mt-32 md:grid-cols-3 md:items-center">
+      <div className="mx-auto mt-7 grid max-w-[1400px] gap-0.5 border-t border-white/10 pt-4 text-center text-xs text-ash md:mt-32 md:gap-2 md:pt-6 md:text-sm md:grid-cols-3 md:items-center">
         <p className="md:text-left">© {new Date().getFullYear()} Kenko. Todos os direitos reservados.</p>
         <p>Desenvolvido por <strong className="font-bold text-washi">Landora</strong>®</p>
         <span aria-hidden className="hidden md:block" />
