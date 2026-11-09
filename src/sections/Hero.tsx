@@ -29,7 +29,12 @@ export function Hero({ revealed }: { revealed: boolean }) {
       .add('.rail', { opacity: [0, 1], duration: 1200 }, 1200)
       .add('.halo', { opacity: [0, 0.55], duration: 1600 }, 900)
     const float = animate('.ex-float', { y: [-6, 6], duration: 3800, alternate: true, loop: true, ease: 'inOutSine' })
-    return () => { tl.revert(); float.revert() }
+    const io = new IntersectionObserver(([e]) => {
+      el.classList.toggle('hero-paused', !e.isIntersecting)
+      if (e.isIntersecting) float.play(); else float.pause()
+    })
+    io.observe(el)
+    return () => { io.disconnect(); tl.revert(); float.revert() }
   }, [revealed])
 
   /* rolagem: um único progresso (--p, 0 a 1) suavizado em rAF; o resto é CSS */
@@ -47,7 +52,11 @@ export function Hero({ revealed }: { revealed: boolean }) {
       el.style.setProperty('--p', cur.toFixed(4))
       raf = cur === target ? 0 : requestAnimationFrame(tick)
     }
-    const onScroll = () => { read(); if (!raf) raf = requestAnimationFrame(tick) }
+    const onScroll = () => {
+      const r = el.getBoundingClientRect()
+      if (r.bottom < -50 || r.top > innerHeight) return
+      read(); if (!raf) raf = requestAnimationFrame(tick)
+    }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onScroll)

@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { reducedMotion } from '../../lib/utils'
 
 /** Brasas e pétalas vermelhas subindo lentamente (canvas, pausa fora da tela). */
-export function Embers({ count = 28, className }: { count?: number; className?: string }) {
+export function Embers({ count = 22, className }: { count?: number; className?: string }) {
   const ref = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -23,12 +23,14 @@ export function Embers({ count = 28, className }: { count?: number; className?: 
       ph: Math.random() * 6.28, petal: Math.random() > 0.78, a: 0.25 + Math.random() * 0.6,
     })
     const ps = Array.from({ length: count }, () => mk(true))
+    let last = 0
     const tick = (t: number) => {
       raf = requestAnimationFrame(tick)
-      if (!vis) return
+      if (!vis || t - last < 32) return // ~30 quadros/s
+      last = t
       ctx.clearRect(0, 0, w, h)
       for (const p of ps) {
-        p.y -= p.vy; p.x += p.vx + Math.sin(t / 1400 + p.ph) * 0.18
+        p.y -= p.vy * 2; p.x += (p.vx + Math.sin(t / 1400 + p.ph) * 0.18) * 2
         if (p.y < -12) Object.assign(p, mk())
         const fade = Math.min(1, p.y / (h * 0.25), (h - p.y) / (h * 0.1))
         ctx.globalAlpha = Math.max(0, p.a * fade)
