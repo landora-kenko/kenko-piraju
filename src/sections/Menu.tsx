@@ -13,6 +13,11 @@ import { cn, money, reducedMotion } from '../lib/utils'
 type P = Product & { available: boolean }
 const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 const FILTERS: Tag[] = ['picante', 'vegetariano', 'chef', 'novo']
+const SHORT: Record<string, string> = {
+  todos: 'Tudo', combinados: 'Combos', niguiris: 'Niguiris', sashimis: 'Sashimis', uramakis: 'Makis', hots: 'Hot rolls',
+  temakis: 'Temakis', quentes: 'Quentes', entradas: 'Entradas', sobremesas: 'Doces', bebidas: 'Bebidas',
+}
+const SHORT_TAG: Partial<Record<Tag, string>> = { chef: 'Sushiman' }
 const LIMIT = 4 // 4 por linha no desktop, 2 colunas x 2 linhas no celular
 
 /** Grade que revela os pratos em cascata quando entra na tela. */
@@ -139,16 +144,17 @@ export function Menu() {
       {/* categorias */}
       <div className="sticky top-16 z-40 mt-10 border-y border-white/10 bg-black">
         <div className="mx-auto max-w-[1400px] px-5 md:px-10">
-          <div ref={bar} className="scroll-x flex gap-1 py-2" role="tablist" aria-label="Categorias do cardápio">
+          <div ref={bar} className="grid grid-cols-6 gap-1 py-2 md:flex md:overflow-x-auto md:[scrollbar-width:none]" role="tablist" aria-label="Categorias do cardápio">
             {[{ id: 'todos', name: 'Tudo', kanji: '全' }, ...CATEGORIES].map((c) => {
               const on = !filtering && cat === c.id
               return (
                 <button
                   key={c.id} role="tab" aria-selected={on} onClick={() => pick(c.id)}
-                  className={cn('group relative flex min-w-[5.5rem] shrink-0 flex-col items-center gap-0.5 px-4 py-2 transition-colors', on ? 'bg-beni text-white' : 'text-washi/70 hover:bg-white/[.06] hover:text-white')}
+                  className={cn('group relative flex min-w-0 flex-col items-center gap-0.5 px-0.5 py-1.5 transition-colors md:min-w-[5.5rem] md:shrink-0 md:px-4 md:py-2', on ? 'bg-beni text-white' : 'text-washi/70 hover:bg-white/[.06] hover:text-white')}
                 >
-                  <span className={cn('font-display text-xl font-extrabold leading-none', on ? 'text-white' : 'text-beni')}>{c.kanji}</span>
-                  <span className="whitespace-nowrap text-[13px] font-medium">{c.name}</span>
+                  <span className={cn('font-display text-base font-extrabold leading-none md:text-xl', on ? 'text-white' : 'text-beni')}>{c.kanji}</span>
+                  <span className="whitespace-nowrap text-[10.5px] font-medium md:hidden">{SHORT[c.id] ?? c.name}</span>
+                  <span className="hidden whitespace-nowrap text-[13px] font-medium md:inline">{c.name}</span>
                 </button>
               )
             })}
@@ -156,20 +162,22 @@ export function Menu() {
         </div>
       </div>
 
-      <div id="cardapio-grid" className="mx-auto max-w-[1400px] scroll-mt-36 px-5 pb-8 md:px-10">
-        <div className="mt-6 flex flex-wrap items-center gap-2" aria-label="Filtros">
-          <span className="mr-1 text-sm text-ash">Filtrar:</span>
+      <div id="cardapio-grid" className="mx-auto max-w-[1400px] scroll-mt-44 px-5 md:scroll-mt-36 pb-8 md:px-10">
+        <div className="mt-6 grid grid-cols-4 items-center gap-1.5 md:flex md:flex-wrap md:gap-2" aria-label="Filtros">
+          <span className="mr-1 hidden text-sm text-ash md:inline">Filtrar:</span>
           {FILTERS.map((t) => {
             const on = tags.includes(t)
+            const I = TAG_META[t].icon
             return (
               <button key={t} aria-pressed={on} onClick={() => setTags((s) => (on ? s.filter((x) => x !== t) : [...s, t]))}
-                className={cn('flex items-center gap-1.5 border px-3 py-1.5 text-sm transition-colors', on ? 'border-beni bg-beni text-white' : 'border-white/15 text-washi/80 hover:border-white/40')}>
-                {TAG_META[t].icon && (() => { const I = TAG_META[t].icon!; return <I size={14} /> })()}
-                {TAG_META[t].label}
+                className={cn('flex flex-col items-center justify-center gap-1 border px-1 py-2 text-[11px] leading-none transition-colors md:flex-row md:gap-1.5 md:px-3 md:py-1.5 md:text-sm', on ? 'border-beni bg-beni text-white' : 'border-white/15 text-washi/80 hover:border-white/40')}>
+                {I && <I size={14} />}
+                <span className="md:hidden">{SHORT_TAG[t] ?? TAG_META[t].label}</span>
+                <span className="hidden md:inline">{TAG_META[t].label}</span>
               </button>
             )
           })}
-          {filtering && <button onClick={() => { setQ(''); setTags([]) }} className="px-2 py-1.5 text-sm text-ash underline underline-offset-4 hover:text-white">Limpar filtros</button>}
+          {filtering && <button onClick={() => { setQ(''); setTags([]) }} className="col-span-4 px-2 py-1.5 text-sm text-ash underline underline-offset-4 hover:text-white">Limpar filtros</button>}
         </div>
 
         {groups.map((g) => (
