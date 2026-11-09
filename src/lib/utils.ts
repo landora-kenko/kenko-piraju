@@ -24,8 +24,8 @@ export const hash = (str: string) => {
   return h >>> 0
 }
 
-export const reducedMotion = () =>
-  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+/** Animações sempre ativas: ignora a preferência "reduzir movimento" do sistema. */
+export const reducedMotion = () => false
 
 export const uid = (n = 4) =>
   Math.random().toString(36).slice(2, 2 + n).toUpperCase()

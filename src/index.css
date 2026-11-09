@@ -110,10 +110,7 @@ fieldset > legend + * { clear: both; }
 .scroll-x { overflow-x: auto; scrollbar-width: none; }
 .scroll-x::-webkit-scrollbar { display: none; }
 
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
-}
+/* animações sempre ativas, mesmo se o sistema pedir menos movimento */
 
 /* ───────── fotos reais e neon ───────── */
 @layer components {
@@ -135,7 +132,6 @@ fieldset > legend + * { clear: both; }
     position: absolute; left: 0; top: 0; width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; border-radius: 50%;
     background: #fff1ee; box-shadow: 0 0 0 3px rgba(255,45,31,.55), 0 0 14px 3px #ff2d1f; animation: pulse-dot 2s infinite;
   }
-  @media (prefers-reduced-motion: reduce) { .plate-ring::after, .callout-dot { animation: none; } }
 }
 
 @layer components {
@@ -151,7 +147,6 @@ fieldset > legend + * { clear: both; }
   .hero-scroll .hero-copy { opacity: clamp(0, calc(1 - var(--p) * 3.2), 1); transform: translate3d(0, calc(var(--p) * -24px), 0); }
   .hero-scroll .ex-label { opacity: clamp(0, calc((var(--p) - .45) * 4), 1); transition: none; }
 }
-@media (prefers-reduced-motion: reduce) { .hero-scroll .ex-label { opacity: 1; } }
 
 @keyframes pulse-green { 0%,100% { box-shadow: 0 0 0 0 rgba(74,222,128,.7) } 70% { box-shadow: 0 0 0 9px rgba(74,222,128,0) } }
 .live-dot-green { animation: pulse-green 2s infinite; }
